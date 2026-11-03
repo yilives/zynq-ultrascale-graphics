@@ -41,7 +41,7 @@ ARM Cortex-A53                     可编程逻辑（PL）
 | `build/` | `build/`（12 文件） | 构建入口 `build.ps1` + 6 个关键脚本 + 4 份实现报告 |
 | `board/` | `board/runtime`（394 文件） | 板端运行时：内核模块、DMA 代理、启动器、CNN 调度 |
 | `data/` | `data/`（61 文件） | 4 套 CNN 权重、黄金参考 2.25 MB、56 张板上回读图 |
-| `skill/` | `skill/README.md` | **技能包（评分项，踩坑清单型，14 条）** |
+| `skill/` | `skill/README.md` | **技能包（评分项，踩坑清单型，17 条）** |
 | `report/` | `report/design-report.docx` + `report/ai-collaboration.md` | 技术文档 + **大模型协作记录（评分项）** |
 | — | `poster/poster.pptx` + `poster-preview.png` | 决赛海报（AMD 模板，一页英文） |
 | — | `figures/`（7 张） | FPGA 专属配图，均可由脚本重建 |
@@ -60,7 +60,7 @@ ARM Cortex-A53                     可编程逻辑（PL）
 |---|---|---|
 | **技术文档** | 五部分：作品概述 / 系统组成 / 完成情况与性能 / 总结 / 参考文献 | `report/design-report.docx`（**8 图 2 表**，字数按模板限额全部合规） |
 | **海报** | 一页英文，按 AMD PPT 模板版式（含对角分隔线、CREATIVE/RESULT 竖排字母、右栏边界） | `poster/poster.pptx` |
-| **技能包** | **14 条踩坑清单（P1–P14）**，每条含触发条件、现象、根因、定位方法、修复、失效条件 | `skill/README.md` |
+| **技能包** | **17 条踩坑清单（P1–P17）**，每条含触发条件、现象、根因、定位方法、修复、失效条件 | `skill/README.md` |
 | **大模型协作记录** | 51 条真实提示词、5 条模型自我纠错原文、8 条用户纠正模型的清单、5 条工作流规则、12 条未采用清单 | `report/ai-collaboration.md` |
 | **工程包** | 源码 + 仿真 + 构建脚本 + 实现报告 + 上板输出 + 黄金参考 | `src/ sim/ build/ board/ data/ ports/ config/ external/` |
 
@@ -256,7 +256,7 @@ SD 卡的 `BOOT.BIN` 里仍是 2026-10-18 的旧 PL 分区。**没有任何脚�
 ## 八、复核入口（按重要性排序）
 
 1. **技术文档**：`report/design-report.docx` —— 五部分，8 图 2 表
-2. **技能包**：`skill/README.md` —— 401 行，14 条踩坑（P1–P14）
+2. **技能包**：`skill/README.md` —— 522 行，**17 条踩坑（P1–P17）**
 3. **协作记录**：`report/ai-collaboration.md` —— 51 条真实提示词、5 条自我纠错原文、8 条用户纠正模型
 4. **技能包提炼过程**：`report/skill-derivation.md` —— 每条踩坑从哪次失败总结、如何验证、边界在哪
 5. **演示口播稿**：`demo-script-3min.md` —— 3 分钟，含 8 条问答预案与数字速查卡
