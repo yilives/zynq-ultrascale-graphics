@@ -242,17 +242,25 @@ SD 卡的 `BOOT.BIN` 里仍是 2026-10-18 的旧 PL 分区。**没有任何脚�
 
 **上游保留原版权与许可声明。本作品不声明拥有 RasterIX 或 FSR 的著作权。**
 完整组件清单与许可全文见根目录 **LICENSE**（GPLv3）与 **NOTICE.md**。
-按指南 3.3.3.3「强烈要求开源」，建议后续以 GPLv3 兼容方式在 GitHub/Gitee 发布
-（因链接 RasterIX，须整体遵循 GPLv3）。
+
+### 开源发布（指南 3.3.3.3）
+
+**已开源发布：<https://github.com/yilives/zynq-ultrascale-graphics>**
+
+- 协议 **GPLv3**。GPLv3 允许再分发，满足「采用允许再分发的开源协议」；
+  因链接上游 RasterIX（GPLv3），本作品须整体遵循 GPLv3，不能改用 MIT/Apache-2.0。
+- 仓库内容与本提交包一致，可直接 `git clone` 复现。
 
 ---
 
 ## 八、复核入口（按重要性排序）
 
 1. **技术文档**：`report/design-report.docx` —— 五部分，8 图 2 表
-2. **技能包**：`skill/README.md` —— 401 行，14 条踩坑
-3. **协作记录**：`report/ai-collaboration.md` —— 254 行，含真实提示词与纠错原文
-4. **工程源码**：`src/rtl/`（自研 RTL）、`ports/`（ARM 补丁）、`external/rasterix/`（上游+补丁）
-5. **实现报告**：`build/reports/`（v23 层级资源、无 FSR 底座布线、r134 上板验收）
-6. **海报**：`poster/poster.pptx` + `poster-preview.png`
-7. **配图**：`figures/` —— 7 张，均可由 `rasterix-linux/scripts/build_amd_fig*.py` 重建
+2. **技能包**：`skill/README.md` —— 401 行，14 条踩坑（P1–P14）
+3. **协作记录**：`report/ai-collaboration.md` —— 51 条真实提示词、5 条自我纠错原文、8 条用户纠正模型
+4. **技能包提炼过程**：`report/skill-derivation.md` —— 每条踩坑从哪次失败总结、如何验证、边界在哪
+5. **演示口播稿**：`demo-script-3min.md` —— 3 分钟，含 8 条问答预案与数字速查卡
+6. **工程源码**：`src/rtl/`（自研 RTL）、`ports/`（ARM 补丁）、`external/rasterix/`（上游+补丁）
+7. **实现报告**：`build/reports/`（v23 层级资源、无 FSR 底座布线、r134 上板验收）
+8. **海报**：`poster/poster.pptx` + `poster-preview.png`
+9. **配图**：`figures/` —— 7 张，均可由 `rasterix-linux/scripts/build_amd_fig*.py` 重建
