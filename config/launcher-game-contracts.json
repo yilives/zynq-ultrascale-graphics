@@ -1,0 +1,24 @@
+{
+  "java_existing": {
+    "libs/asm-all-4.1.jar": "165b583b0b548405dd97019666f94a86ee1d1e3af227ae4dc82c6e27d6885bb1",
+    "libs/client.jar": "c1c3740a912ef523a8bd46605ab5708643498330140cba175c7ce6f177e468e1",
+    "libs/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libs/jopt-simple-4.5.jar": "64335a48be6b142a7d0c13ec5c82a707857aa58c0234e6eda3eaca0e96eea51b",
+    "libs/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "libs/launchwrapper-1.5.jar": "c9fa09f5815f1d8ce5b7d59a53168b9a1b0ab9663e43b2440311391df7a78d52",
+    "libs/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libs/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "native/liblwjgl.so": "d220c44d0f26b56a82ccb25103b974c782f7d1dd136a036ebf0fd9b78a9e7ffa",
+    "zulu8.98.0.107-ca-jre8.0.512-linux_aarch64/bin/java": "0f453588f50c6545f66898be9233e8ac498d3467a6935387a62701bfa99a08a0",
+    "zulu8.98.0.107-ca-jre8.0.512-linux_aarch64/lib/aarch64/libjava.so": "e8f462ba51cf9ee9808581a7412701049d419b0ad5da3a379384419a0bb9cbac",
+    "zulu8.98.0.107-ca-jre8.0.512-linux_aarch64/lib/aarch64/server/libjvm.so": "224d19ede3c831908218504b72c5882f4ae0003f2e0909aae60312d989b80ccb",
+    "zulu8.98.0.107-ca-jre8.0.512-linux_aarch64/lib/rt.jar": "121502f12fc2b26ba126d5dc32911931b5654dc39c4119d4803972d468f5413e"
+  },
+  "touhou": {
+    "th06-runtime/bin/rix-th06-run": "f54c0deb44770e94be35fa3a06bcc18d8f892b793f72ca7004cbca69a10dfc6c",
+    "th06-runtime/bin/th06-rix": "a6fd453637d0ccbbcd5c63a9bdf731439e0e56683b1e4dacdad69e3821255989",
+    "th06-runtime/lib/libSDL2-2.0.so.0.18.2": "42f675fde6c8b984672bb539b97ef14bcb69589884e47698d95bc9195132beb2",
+    "th06-runtime/lib/libSDL2_image-2.0.so.0.2.3": "040a7a66785267373d0d582525097701825ed12d89728698c1b069c7017e0d66",
+    "th06-runtime/lib/libSDL2_ttf-2.0.so.0.18.0": "18fb2d279694222d46742cb6bbcec7aa8863be0820aa0716680b686badf8c03a"
+  }
+}

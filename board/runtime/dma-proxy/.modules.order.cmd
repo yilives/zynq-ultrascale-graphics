@@ -1,0 +1,1 @@
+savedcmd_/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/modules.order := {   echo /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/rix_dma_proxy.o; :; } > /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/modules.order

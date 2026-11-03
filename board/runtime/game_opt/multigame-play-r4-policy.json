@@ -1,0 +1,30 @@
+{
+  "tuxracer": {
+    "source_profile": "baseline",
+    "neural_binary": "rix-cfs-early"
+  },
+  "neverball": {
+    "source_profile": "candidate",
+    "neural_binary": "rix-cfs-early"
+  },
+  "neverputt": {
+    "source_profile": "baseline",
+    "neural_binary": "rix-cfs-poll"
+  },
+  "quake": {
+    "source_profile": "baseline",
+    "neural_binary": "rix-cfs-poll"
+  },
+  "quake3": {
+    "source_profile": "candidate",
+    "neural_binary": "rix-cfs-poll"
+  },
+  "touhou": {
+    "source_profile": "baseline",
+    "neural_binary": "rix-cfs-early"
+  },
+  "classicube": {
+    "source_profile": "baseline",
+    "neural_binary": "rix-cfs-poll"
+  }
+}

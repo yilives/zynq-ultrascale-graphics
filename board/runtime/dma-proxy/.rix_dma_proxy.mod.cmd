@@ -1,0 +1,1 @@
+savedcmd_/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/rix_dma_proxy.mod := printf '%s\n'   rix_dma_proxy.o | awk '!x[$$0]++ { print("/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/"$$0) }' > /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/dma-proxy/rix_dma_proxy.mod

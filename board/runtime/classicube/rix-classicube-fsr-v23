@@ -1,0 +1,279 @@
+#!/usr/bin/env python3
+"""Play ClassiCube with the verified FPGA FSR runtime; keyboard/mouse by default."""
+import argparse,fcntl,hashlib,json,os,re,signal,subprocess,sys,tarfile,time,uuid
+from pathlib import Path
+sys.path.insert(0,'/opt/rasterix/experimental')
+import rasterix_games as games
+from game_runtime_support import GameLog,GpuRecoveryGuard
+
+p=argparse.ArgumentParser(description=__doc__)
+p.add_argument('--seconds',type=int,default=0,help='0: play until normal quit; otherwise a bounded diagnostic run')
+p.add_argument('--world-size',type=int,choices=(32,64,128),default=64)
+p.add_argument('--view-distance',type=int,choices=(16,24,32,48,64),default=32)
+p.add_argument('--fps-limit',type=int,choices=(30,60,120),default=120,
+               help='CPU submission cap; the LCD remains approximately 60 Hz')
+p.add_argument('--present-strategy',choices=('async','pipeline','serial'),default='async',
+               help='async: overlap CPU/vertex/DMA queues; pipeline and serial retain comparison modes')
+p.add_argument('--vertex-fetch',choices=('packed','generic','legacy'),default='packed',
+               help='packed: specialized array reader; generic/legacy: diagnostic comparison paths')
+p.add_argument('--attempt',default='cc_fsr_'+uuid.uuid4().hex[:12])
+p.add_argument('--autoplay',action='store_true')
+p.add_argument('--flat',action='store_true')
+p.add_argument('--capture',action='store_true')
+p.add_argument('--map',default=None)
+p.add_argument('--gameplay-qa',action='store_true')
+p.add_argument('--triangles',action='store_true',help='Use the original indexed triangle path for comparison')
+p.add_argument('--input-qa',action='store_true',help='Expose read-only input telemetry and bounded capture requests')
+p.add_argument('--mouse-sensitivity',type=int,choices=range(1,201),metavar='1..200')
+a=p.parse_args()
+assert (a.seconds==0 or 5<=a.seconds<=3600) and re.fullmatch(r'[a-z0-9_-]{1,48}',a.attempt)
+assert not a.input_qa or not a.autoplay,'External input QA must not inject engine input internally'
+assert not a.capture,'Use the dedicated FSR validation helpers for display capture'
+assert os.geteuid()==0
+lock=open('/tmp/rasterix-game-launch.lock','a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+guard=GpuRecoveryGuard();guard.check()
+clients=(*games.CLIENTS,'ClassiCube','rix-neural-style','rix-fsr-pl')
+assert not subprocess.run(['pidof',*clients],stdout=subprocess.PIPE).stdout,'Another GPU client is running'
+for module in ('rix_dma_proxy','plgpu_display'):
+    if module+' ' not in Path('/proc/modules').read_text():
+        subprocess.run(['insmod','/opt/rasterix/modules/'+module+'.ko'],check=True)
+before=games.status()
+assert before['status']==3 and before['config']==0x9adb505e and not any(before[k] for k in games.ERRORS)
+# The executable itself verifies the active boot/bitstream/source receipt before MMIO.
+fsr_path=Path('/tmp/rix-fpga-fsr/ahead/rix-fsr-pl')
+fsr_info=fsr_path.lstat()
+assert fsr_path.is_file() and not fsr_path.is_symlink() and fsr_info.st_uid==0 and not fsr_info.st_mode&0o022
+assert hashlib.sha256(fsr_path.read_bytes()).hexdigest()=='de86960c07507deabb08e79daf6c1adc99315564e041db772ab8152146d3cb13','Approved FPGA FSR runtime is unavailable; load the verified v23 RAM image first'
+fsr_preflight=subprocess.Popen([str(fsr_path),'--protocol-check'])
+try:
+    assert fsr_preflight.wait(timeout=20)==0,'FPGA FSR protocol preflight failed'
+except BaseException:
+    if fsr_preflight.poll() is None:
+        fsr_preflight.terminate()
+        try:fsr_preflight.wait(timeout=15)
+        except subprocess.TimeoutExpired:print('FSR preflight retains ownership; reset required; PID',fsr_preflight.pid,file=sys.stderr)
+    raise
+games.prepare(['game-runtime'])
+base=Path('/opt/rasterix/experimental/cache')
+receipt=json.loads((base/'classicube.json').read_text())
+archive=base/'classicube.tar.gz'
+assert receipt['verified'] and games.sha(archive)==receipt['sha256']
+work=Path('/tmp/rasterix-classicube')/receipt['sha256'][:12]
+if not (work/'.verified').exists():
+    work.mkdir(parents=True,exist_ok=True)
+    with tarfile.open(archive) as tf:
+        members=tf.getmembers()
+        assert len(members)==len({m.name for m in members})
+        manifest=json.load(tf.extractfile('classicube/manifest.json'))
+        assert {m.name for m in members}=={'classicube/'+n for n in manifest}|{'classicube/manifest.json'}
+        for m in members:
+            name=Path(m.name);assert m.isfile() and name.parts[0]=='classicube' and '..' not in name.parts
+            dst=work.joinpath(*name.parts[1:]);assert not dst.is_symlink()
+            dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(tf.extractfile(m).read())
+            dst.chmod(0o755 if name.parts[1]=='bin' else 0o644)
+manifest=json.loads((work/'manifest.json').read_text())
+assert all(games.sha(work/n)==v['sha256'] for n,v in manifest.items())
+(work/'.verified').write_text(receipt['sha256']+'\n')
+sys.path.insert(0,str(work/'bin'))
+from rix_capture_source import capture_source
+profile=Path('/opt/rasterix/classicube/profile');profile.mkdir(parents=True,exist_ok=True)
+for folder in ('texpacks','maps','home'):(profile/folder).mkdir(exist_ok=True)
+assets=work/'data/default.zip';dst=profile/'texpacks/default.zip'
+if dst.is_symlink():assert os.readlink(dst).startswith('/tmp/rasterix-classicube/')
+elif dst.exists():assert games.sha(dst)==games.sha(assets),'Preserve unknown user texture pack before changing it'
+temporary=dst.with_name('default.zip.rix-incoming')
+assert not temporary.exists() and not temporary.is_symlink()
+temporary.symlink_to(assets);temporary.replace(dst)
+options=profile/'options.txt'
+values=dict(line.split('=',1) for line in options.read_text().splitlines() if '=' in line) if options.exists() else {}
+physics_before=values.get('singleplayerphysics','True')
+values.update({'window-width':'400','window-height':'240','viewdist':str(a.view_distance),
+ 'musicvolume':'0','soundsvolume':'0','fpslimit':'Limit%dFPS'%a.fps_limit,'auto-pause':'False','usebitmapfont':'True',
+ 'gfx-mipmaps':'False','gfx-smoothlighting':'False','entityshadow':'None','chat-logging':'False',
+ 'gui-showfps':'False','gui-chatlines':'2','gui-hotbarscale':'1.0','gui-chatscale':'0.5',
+ 'gfx-maxchunkupdates':'2','win-raw-input':'False'})
+values.setdefault('mousesensitivity','30');values.setdefault('invertmouse','False');values.setdefault('camera-smooth','False')
+if a.mouse_sensitivity is not None:values['mousesensitivity']=str(a.mouse_sensitivity)
+options.write_text(''.join(k+'='+v+'\n' for k,v in values.items()))
+out=Path('/tmp/postproc-tests')/a.attempt;out.mkdir(parents=True,exist_ok=False)
+env=os.environ.copy();runtime=games.WORK/'runtime'
+graphics=(runtime/'lib/libGL.so.1') if a.vertex_fetch=='legacy' else work/'lib/libGL.so.1'
+assert graphics.is_file()
+library_path=str(runtime/'lib') if a.vertex_fetch=='legacy' else str(work/'lib')+':'+str(runtime/'lib')
+env.update(DISPLAY=':0',SDL_VIDEODRIVER='x11',SDL_AUDIODRIVER='dummy',LANG='C',LC_ALL='C',
+ SDL_VIDEO_GL_DRIVER=str(graphics),LD_LIBRARY_PATH=library_path,
+ HOME=str(profile/'home'),RIX_SECONDS=str(a.seconds),RIX_WORLD_SIZE=str(a.world_size),RIX_FRAME_METRICS='1')
+env['RIX_PACKED_FETCH']='0' if a.vertex_fetch=='generic' else '1'
+# The threaded backend already fences each display-list buffer before reuse;
+# the FPGA swap handshake releases it only after the LCD accepts that frame.
+# Avoid draining both queues before every swap. Keep the final presentation
+# fence and shutdown drain enabled, also when an old shell set SYNC=0.
+env.update(RIX_PRESENT_STRATEGY=a.present_strategy,RIX_PRESENT_SYNC='1')
+for key in ('RIX_AUTOPLAY','RIX_GAMEPLAY_QA','RIX_INPUT_QA','RIX_CAPTURE','RIX_HOLD','RIX_SAVE','RIX_FLAT'):env.pop(key,None)
+if a.autoplay:env['RIX_AUTOPLAY']='1'
+if a.gameplay_qa:
+    assert a.autoplay and a.seconds>=10
+    env.update(RIX_GAMEPLAY_QA='1',RIX_SAVE=str(profile/'maps'/(a.attempt+'.cw')))
+    values['singleplayerphysics']='False'
+    options.write_text(''.join(k+'='+v+'\n' for k,v in values.items()))
+if a.flat:env['RIX_FLAT']='1'
+if a.input_qa:env['RIX_INPUT_QA']=str(out)
+if a.triangles:env['RIX_CLASSICUBE_TRIANGLES']='1'
+else:env.pop('RIX_CLASSICUBE_TRIANGLES',None)
+if a.capture:env.update(RIX_CAPTURE=str(out/'native.ppm'),RIX_HOLD='8')
+exe=work/'bin/ClassiCube';command=[str(exe),a.map or '--singleplayer']
+if a.map:assert Path(a.map).is_file()
+deps=subprocess.run(['/lib/ld-linux-aarch64.so.1','--list',str(exe)],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+(out/'dependencies.log').write_bytes(deps.stdout);assert deps.returncode==0,deps.stdout
+post_before=json.loads(subprocess.check_output([games.POST,'--status'],text=True))['requested']
+subprocess.run([games.POST,'--pl-mode','nearest','--style','0'],check=True)
+subprocess.run(['plgpuctl','enable'],check=True,stdout=subprocess.DEVNULL)
+stopping=False
+def stop(sig,frame):
+    global stopping
+    stopping=True
+signal.signal(signal.SIGINT,stop);signal.signal(signal.SIGTERM,stop)
+class CubeLog(GameLog):
+    def _accept(self,line):
+        super()._accept(line)
+        if line.startswith(b'RIX_'):self.file.flush()
+def capture_present_fence():
+    # glReadPixels drains the CPU/DMA queues, but that is not an LCD fence.
+    # The native hook freezes further submissions while this readback runs.
+    deadline=time.monotonic()+5;stable_since=None;frame_id=None
+    while time.monotonic()<deadline:
+        current=games.status()
+        assert not any(current[k] for k in games.ERRORS),'GPU fault during capture'
+        idle=len({current[k] for k in ('frame_id','swap','copy','presented','last_presented')})==1
+        if not idle or current['frame_id']!=frame_id or stable_since is None:
+            stable_since=time.monotonic() if idle else None
+            frame_id=current['frame_id']
+        elif time.monotonic()-stable_since>=.03:return current
+        time.sleep(.002)
+    raise RuntimeError('Capture presentation fence timed out')
+metrics=None;world=None;captured=False;failure=None;child=None;measure_first=None;measure_last=None;lines=[];capture_fence=None
+# FSR shares the display lock with the existing postprocessor. Drain it before
+# the game launcher restores POST. Never kill a possibly active AXI master.
+fsr_child=None;fsr_log=None;fsr_runs=0;fsr_failure=None
+def start_fsr():
+    global fsr_child,fsr_log,fsr_runs
+    assert fsr_child is None or fsr_child.poll()==0,'Previous FSR runtime failed'
+    if fsr_log is not None:fsr_log.close()
+    fsr_runs+=1
+    fsr_log=(out/('fsr-%02d.log'%fsr_runs)).open('x')
+    fsr_child=subprocess.Popen([str(fsr_path),'--live','--seconds','3600'],stdout=fsr_log,stderr=subprocess.STDOUT)
+def stop_fsr():
+    global fsr_failure
+    if fsr_child is None:return True
+    try:
+        if fsr_child.poll() is None:fsr_child.terminate()
+        fsr_child.wait(timeout=15)
+        if fsr_child.returncode!=0:raise RuntimeError('FSR process failed: %s'%fsr_child.returncode)
+        if Path('/tmp/rix-fsr-pl.quarantine').exists():raise RuntimeError('FSR is quarantined')
+        return True
+    except Exception as exc:
+        fsr_failure=repr(exc)
+        return False
+    finally:
+        if fsr_log is not None and fsr_child.poll() is not None:fsr_log.close()
+began=time.monotonic()
+try:
+    with CubeLog(out/'game.log') as log:
+        child=subprocess.Popen(command,env=env,cwd=str(profile),stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        log.attach(child.stdout)
+        while child.poll() is None:
+            current=games.status()
+            text=(out/'game.log').read_text(errors='replace')
+            if 'RIX_MEASURE_BEGIN' in text and measure_first is None:measure_first=(time.monotonic(),current['presented'])
+            if 'RIX_CLASSICUBE_RESULT ' in text and measure_last is None:measure_last=(time.monotonic(),current['presented'])
+            if Path('/tmp/rix-fsr-pl.quarantine').exists():raise RuntimeError('FPGA FSR is quarantined; reset required')
+            if fsr_child is not None and fsr_child.poll() not in (None,0):raise RuntimeError('FPGA FSR failed')
+            if measure_first is not None and not stopping and 'RIX_CLASSICUBE_RESULT ' not in text and (fsr_child is None or fsr_child.poll()==0):start_fsr()
+            if any(current[k]!=before[k] for k in games.ERRORS):raise RuntimeError('GPU fault')
+            if stopping:break
+            if a.seconds and time.monotonic()-began>a.seconds+65:raise RuntimeError('ClassiCube duration watchdog')
+            if a.capture and not captured and (out/'native.ppm').exists() and 'RIX_CLASSICUBE_RESULT ' in text:
+                capture_fence=capture_present_fence()
+                capture_source(out/'presented',capture_fence['frame_id'])
+                subprocess.run([games.POST,'--capture',str(out/'lcd.bin')],check=True,stdout=subprocess.DEVNULL)
+                assert games.status()['frame_id']==capture_fence['frame_id'],'Frame changed during frozen capture'
+                captured=True
+            time.sleep(.1)
+        # Normal quit and SIGTERM both release FSR before stopping/restoring the renderer.
+        fsr_drained=stop_fsr()
+        if not fsr_drained:raise RuntimeError('FSR could not drain: '+str(fsr_failure))
+        if stopping and child.poll() is None:child.terminate()
+        child.wait(timeout=15)
+    lines=(out/'game.log').read_text(errors='replace').splitlines()
+    entries=[json.loads(line.split(' ',1)[1]) for line in lines if line.startswith('RIX_CLASSICUBE_RESULT ')]
+    metrics=entries[-1] if entries else None
+    worlds=[json.loads(line.split(' ',1)[1]) for line in lines if line.startswith('RIX_CLASSICUBE_WORLD ')]
+    world=worlds[-1] if worlds else None
+    assert child.returncode==0 and metrics and all(v>0 for v in metrics['world']) and (not a.capture or captured),'No complete real game frames'
+    if a.gameplay_qa:assert world and world['deleted'] and world['placed'] and world['save_result']==0,'Gameplay or save verification failed'
+except Exception as error:
+    failure=repr(error)
+finally:
+    fsr_drained=stop_fsr()
+    if not fsr_drained:failure=(failure or '')+'; FSR remains active or quarantined: '+str(fsr_failure)
+    if child is not None and child.poll() is None:
+        child.terminate()
+        try:child.wait(timeout=15)
+        except subprocess.TimeoutExpired:failure=(failure or '')+'; GPU client did not stop; reset required'
+    # Restore the previous postprocess mode only after the renderer has drained.
+    if fsr_drained and (child is None or child.poll() is not None):
+        mode={0:'nearest',1:'bilinear'}.get(post_before&3)
+        if mode:subprocess.run([games.POST,'--pl-mode',mode,'--style',str((post_before>>4)&3)],check=True,stdout=subprocess.DEVNULL)
+        if a.gameplay_qa:
+            restored=dict(line.split('=',1) for line in options.read_text().splitlines() if '=' in line)
+            restored['singleplayerphysics']=physics_before
+            options.write_text(''.join(k+'='+v+'\n' for k,v in restored.items()))
+# Keep the raw per-run logs; the result contains compact completed-frame evidence.
+fsr_stats=[];fsr_completed_frames=0;fsr_elapsed_seconds=0.0
+try:
+    assert fsr_drained and fsr_runs>0,'No drained FSR execution'
+    for path in sorted(out.glob('fsr-*.log')):
+        entries=[json.loads(line) for line in path.read_text().splitlines() if line.startswith('{')]
+        assert len(entries)==1,'Missing or ambiguous FSR summary'
+        stats=entries[0]
+        assert stats['backend']=='FPGA PL EASU12 + RCAS5 fixed point' and stats['cpu_pixel_processing_live'] is False
+        assert type(stats['frames']) is int and stats['frames']>0 and stats['elapsed_seconds']>0
+        assert stats['unique_source_frames']==stats['frames'] and stats['repeated_source_frames']==0
+        assert stats['prefetch_lease_expirations']==stats['duplicate_snapshot_retries']==stats['snapshot_retries']==0
+        fsr_completed_frames+=stats['frames'];fsr_elapsed_seconds+=stats['elapsed_seconds']
+        stats.pop('ack_timestamps_us',None);stats['log']=path.name;fsr_stats.append(stats)
+    assert len(fsr_stats)==fsr_runs,'FSR run count mismatch'
+except Exception as exc:
+    failure=(failure or '')+'; FSR evidence: '+repr(exc)
+after=games.status()
+record={'passed':failure is None and all(after[k]==before[k]==0 for k in games.ERRORS) and not log.errors['transport_errors'] and after['presented']>before['presented']+3,
+ 'error':failure,'attempt':a.attempt,'boot_id':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+ 'exit_code':None if child is None else child.returncode,'metrics':metrics,'world':world,'before':before,'after':after,
+ 'captured':captured,'log_stats':log.stats() if child else None,'seconds_wall':time.monotonic()-began,
+ 'capture_fence':capture_fence,
+ 'native_sha256':games.sha(exe),'libGL_sha256':games.sha(runtime/'lib/libGL.so.1'),
+ 'package_sha256':receipt['sha256'],'world_size':a.world_size,'view_distance':a.view_distance,'fps_limit':a.fps_limit,
+ 'presentation_strategy':a.present_strategy,'presentation_sync':True,
+ 'vertex_fetch':a.vertex_fetch,'graphics_sha256':games.sha(graphics),
+ 'vertex_cache_enabled':env.get('RIX_VERTEX_CACHE','1')[:1]!='0',
+ 'primitive':'triangles' if a.triangles else 'quads',
+ 'fsr_runtime_sha256':hashlib.sha256(fsr_path.read_bytes()).hexdigest(),
+ 'fsr_runs':fsr_runs,'fsr_drained':fsr_drained,'fsr_error':fsr_failure,'fsr_stats':fsr_stats,
+ 'fsr_completed_frames':fsr_completed_frames,'fsr_elapsed_seconds':fsr_elapsed_seconds,
+ 'fsr_output_fps':fsr_completed_frames/fsr_elapsed_seconds if fsr_elapsed_seconds>0 else None,
+ 'fsr_backend':'FPGA PL EASU12 + RCAS5','fsr_output_size':[800,480],
+ 'cpu_pixel_processing_live':False}
+if measure_first and measure_last and measure_last[0]>measure_first[0]:
+    record['hardware_window']={'seconds':measure_last[0]-measure_first[0],'presented':(measure_last[1]-measure_first[1])&0xffffffff}
+    record['hardware_window']['fps']=record['hardware_window']['presented']/record['hardware_window']['seconds']
+hardware=[json.loads(line.split(' ',1)[1]) for line in lines if line.startswith('RIX_HARDWARE_WINDOW ')]
+if hardware:record['hardware_window']=hardware[-1]
+if 'hardware_window' in record:record['hardware_window']['basis']='GPU source frames before FSR'
+(out/'result.json').write_text(json.dumps(record,indent=2)+'\n')
+with tarfile.open(out.with_suffix('.tar.gz'),'w:gz') as tf:
+    for name in ('result.json','game.log','dependencies.log','native.ppm','lcd.bin','presented.bin','presented.json',*(p.name for p in sorted(out.glob('fsr-*.log')))):
+        if (out/name).is_file():tf.add(out/name,arcname=name)
+if not fsr_drained or log.errors['transport_errors'] or any(after[k]!=before[k] for k in games.ERRORS) or (child is not None and child.poll() is None):
+    guard.mark(a.attempt,{'reason':failure,'exit_code':record['exit_code'],'transport_errors':bool(log.errors['transport_errors']),'after':after})
+print('CLASSICUBE_FSR_RESULT',json.dumps(record),flush=True)
+raise SystemExit(0 if record['passed'] else 2)

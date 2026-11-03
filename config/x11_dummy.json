@@ -1,0 +1,7 @@
+{
+  "version": "0.3.8",
+  "url": "https://www.x.org/releases/individual/driver/xf86-video-dummy-0.3.8.tar.gz",
+  "archive": "xf86-video-dummy-0.3.8.tar.gz",
+  "sha256": "ee5ad51e80c8cc90d4c76ac3dec2269a3c769f4232ed418b29d60d618074631b",
+  "purpose": "Xorg CPU input window without an additional DisplayPort monitor; game pixels use PL LCD"
+}

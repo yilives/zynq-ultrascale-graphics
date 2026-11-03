@@ -1,0 +1,1 @@
+savedcmd_/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/plgpu_display.mod := printf '%s\n'   plgpu_display.o | awk '!x[$$0]++ { print("/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/"$$0) }' > /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/plgpu_display.mod

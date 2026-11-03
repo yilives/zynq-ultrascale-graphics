@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.15)
+project(rix_quake3_game C)
+# Build only the upstream native game modules, using upstream source lists.
+# The Quake3e renderer and the original demo asset archive remain separate.
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+set(CMAKE_SKIP_RPATH ON)
+set(SOURCE_DIR "${IOQ3_SOURCE}/code")
+list(APPEND CMAKE_MODULE_PATH "${IOQ3_SOURCE}/cmake")
+set(BUILD_GAME_LIBRARIES ON)
+set(BUILD_GAME_QVMS OFF)
+set(BASEGAME demoq3)
+set(CGAME_MODULE cgameaarch64)
+set(GAME_MODULE qagameaarch64)
+set(UI_MODULE uiaarch64)
+set(COMMON_LIBRARIES m)
+add_compile_definitions(PRODUCT_VERSION="ioq3-game-87a99d1")
+include(basegame)

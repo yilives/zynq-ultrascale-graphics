@@ -1,0 +1,425 @@
+// RasterIX
+// https://github.com/ToNi3141/RasterIX
+// Copyright (c) 2023 ToNi3141
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#include "Lighting.hpp"
+#include <algorithm>
+
+namespace rr::lighting
+{
+LightingSetter::LightingSetter(LightingData& lightingData, const Mat44& modelViewMatrix)
+    : m_data { lightingData }
+    , m_modelViewMatrix { modelViewMatrix }
+{
+    setEmissionColorMaterial({ { 0.0f, 0.0f, 0.0f, 1.0f } });
+    setAmbientColorMaterial({ { 0.2f, 0.2f, 0.2f, 1.0 } });
+    setAmbientColorScene({ { 0.2f, 0.2f, 0.2f, 1.0f } });
+    setDiffuseColorMaterial({ { 0.8f, 0.8f, 0.8f, 1.0 } });
+    setSpecularColorMaterial({ { 0.0f, 0.0f, 0.0f, 1.0 } });
+    setSpecularExponentMaterial(0.0f);
+
+    for (std::size_t i = 0; i < m_data.lights.size(); i++)
+    {
+        enableLight(i, false);
+        setAmbientColorLight(i, { { 0.0f, 0.0f, 0.0f, 1.0f } });
+        setDiffuseColorLight(i, { { 0.0f, 0.0f, 0.0f, 1.0f } });
+        setSpecularColorLight(i, { { 0.0f, 0.0f, 0.0f, 1.0f } });
+        setPosLight(i, { { 0.0f, 0.0f, 1.0f, 0.0f } });
+        setConstantAttenuationLight(i, 1.0f);
+        setLinearAttenuationLight(i, 0.0f);
+        setQuadraticAttenuationLight(i, 0.0f);
+    }
+    setDiffuseColorLight(0, { { 1.0f, 1.0f, 1.0f, 1.0f } }); // Light Zero has a slightly different configuration here
+    setSpecularColorLight(0, { { 1.0f, 1.0f, 1.0f, 1.0f } }); // Light Zero has a slightly different configuration here
+}
+
+void LightingCalc::init(const Mat44& normalMatrix)
+{
+    if (m_data.rescaleNormal)
+    {
+        // clang-format off
+        m_rescaleFactor = 1.0f / std::sqrt(
+            normalMatrix[3][1] * normalMatrix[3][1] + 
+            normalMatrix[3][2] * normalMatrix[3][2] +
+            normalMatrix[3][3] * normalMatrix[3][3]);
+        // clang-format on
+    }
+    else
+    {
+        m_rescaleFactor = 1.0f;
+    }
+}
+
+void LightingCalc::calculateLights(
+    Vec4& color,
+    const Vec4& triangleColor,
+    const Vec4& vertex,
+    const Vec3& normal) const
+{
+    const float alphaOld = triangleColor[3];
+    if (m_data.lightingEnabled)
+    {
+        const Vec4& emissionColor = (m_data.enableColorMaterialEmission) ? triangleColor : m_data.material.emissionColor;
+        const Vec4& ambientColor = (m_data.enableColorMaterialAmbient) ? triangleColor : m_data.material.ambientColor;
+        const Vec4& diffuseColor = (m_data.enableColorMaterialDiffuse) ? triangleColor : m_data.material.diffuseColor;
+        const Vec4& specularColor = (m_data.enableColorMaterialSpecular) ? triangleColor : m_data.material.specularColor;
+
+        Vec3 n = normal * m_rescaleFactor;
+        if (m_data.normalizeLightNormal)
+        {
+            n = n.normalize();
+        }
+
+        Vec4 colorSum = calculateSceneLight(emissionColor, ambientColor, m_data.material.ambientColorScene);
+        for (std::size_t i = 0; i < LightingData::MAX_LIGHTS; i++)
+        {
+            if (!m_data.lightEnable[i])
+                continue;
+            colorSum += calculateLight(
+                m_data.lights[i],
+                m_data.material.specularExponent,
+                ambientColor,
+                diffuseColor,
+                specularColor,
+                vertex,
+                n);
+        }
+        color = colorSum;
+        color[3] = alphaOld;
+    }
+}
+
+Vec4 LightingCalc::calculateLight(
+    const LightingData::LightConfig& lightConfig,
+    const float materialSpecularExponent,
+    const Vec4& materialAmbientColor,
+    const Vec4& materialDiffuseColor,
+    const Vec4& materialSpecularColor,
+    const Vec4& v0,
+    const Vec3& n0) const
+{
+    // Calculate light from lights
+    const Vec3 dirVertexToLight = calculateDirection(v0, lightConfig.position);
+
+    const float nDotDir = std::clamp(n0.dot(dirVertexToLight), 0.0f, 1.0f);
+
+    const float att = calculateAttenuation(lightConfig, v0);
+    const float specular = calculateSpecular(nDotDir, n0, dirVertexToLight, materialSpecularExponent);
+    const float spot = calculateSpotlight(lightConfig, dirVertexToLight);
+
+    const Vec4 ambientColor = lightConfig.ambientColor * materialAmbientColor;
+    const Vec4 colorLightSpecular = lightConfig.specularColor * materialSpecularColor * specular;
+    return ((lightConfig.diffuseColor * materialDiffuseColor * nDotDir) + ambientColor + colorLightSpecular) * att * spot;
+}
+
+Vec3 LightingCalc::calculateDirection(const Vec4& p1, const Vec4& p2) const
+{
+    if ((p1[3] != 0.0f) && (p2[3] == 0.0f))
+    {
+        return Vec3 { p2[0], p2[1], p2[2] }.unit();
+    }
+    if ((p1[3] == 0.0f) && (p2[3] != 0.0f))
+    {
+        return (Vec3 { p1[0], p1[1], p1[2] } * -1.0f).unit();
+    }
+    if ((p1[3] == 0.0f) && (p2[3] == 0.0f))
+    {
+        return Vec3 { p2[0], p2[1], p2[2] } - Vec3 { p1[0], p1[1], p1[2] }.unit();
+    }
+    if ((p1[3] != 0.0f) && (p2[3] != 0.0f))
+    {
+        const Vec4 p1p = p1.perspectiveDivide();
+        const Vec4 p2p = p2.perspectiveDivide();
+        return (Vec3 { p2p[0], p2p[1], p2p[2] } - Vec3 { p1p[0], p1p[1], p1p[2] }).unit();
+    }
+    return Vec3 { 0.0f, 0.0f, 0.0f };
+}
+
+float LightingCalc::calculateAttenuation(const LightingData::LightConfig& lightConfig, const Vec4& v0) const
+{
+    float att = 1.0f;
+
+    if ((lightConfig.position[3] != 0.0f)
+        && ((lightConfig.constantAttenuation != 1.0f)
+            || (lightConfig.linearAttenuation != 0.0f)
+            || (lightConfig.quadraticAttenuation != 0.0f)))
+    {
+        const float dist = v0.dist(lightConfig.position);
+        att = 1.0f / (lightConfig.constantAttenuation + (lightConfig.linearAttenuation * dist) + lightConfig.quadraticAttenuation * (dist * dist));
+    }
+
+    return att;
+}
+
+float LightingCalc::calculateSpecular(
+    const float nDotDir,
+    const Vec3& n0,
+    const Vec3& dir,
+    const float materialSpecularExponent) const
+{
+    float specular = 1.0f;
+    const float f = (nDotDir != 0.0f) ? 1.0f : 0.0f;
+
+    if ((materialSpecularExponent != 0.0f) // Only calculate when exponent is not 0.0f, because x^0 == 1.0
+        && (f != 0.0f)) // Only calculate when nDotDir is not 0. Because x * 0 == 0
+    {
+
+        // Convert now the direction in dir to the half way vector
+        // Not supported in OpenGL ES
+        // if (lightConfig.localViewer)
+        // {
+        //     Vec4 dirEye { 0.0f, 0.0f, 0.0f, 1.0f };
+        //     dirEye -= v0;
+        //     dirEye.normalize();
+        //     dir += dirEye;
+        //     dir.unit();
+        // }
+        // else
+        // {
+        const Vec3 pointEye { 0.0f, 0.0f, 1.0f };
+        const Vec3 halfWayVector = (dir + pointEye).unit();
+        // }
+
+        specular = n0.dot(halfWayVector);
+
+        if (materialSpecularExponent != 1.0f) // x^1 == x, avoid unnecessary powf call
+        {
+            specular = powf(specular, materialSpecularExponent);
+        }
+    }
+
+    return specular * f;
+}
+
+float LightingCalc::calculateSpotlight(const LightingData::LightConfig& lightConfig, const Vec3& dirLightToVertex) const
+{
+    float spot = 1.0;
+    if (lightConfig.spotlightCutoff != 180.0f)
+    {
+        const Vec3 sdl = lightConfig.spotlightDirection.unit();
+        const Vec3 dirVertexToLight = dirLightToVertex * -1.0f;
+        const float val = dirVertexToLight.dot(sdl);
+        const float cosCutoff = std::cos(lightConfig.spotlightCutoff * 3.1418f / 180.0f);
+        if (val >= std::abs(cosCutoff))
+        {
+            spot = powf(val, lightConfig.spotlightExponent);
+        }
+        else
+        {
+            spot = 0.0f;
+        }
+    }
+    return spot;
+}
+
+Vec4 LightingCalc::calculateSceneLight(
+    const Vec4& emissionColor,
+    const Vec4& ambientColor,
+    const Vec4& ambientColorScene) const
+{
+    return (ambientColor * ambientColorScene) + emissionColor;
+}
+
+void LightingSetter::enableLighting(bool enable)
+{
+    if (m_data.lightingEnabled != enable)
+    {
+        setDataChangedFlag();
+    }
+    m_data.lightingEnabled = enable;
+}
+
+void LightingSetter::enableLight(const std::size_t light, const bool enable)
+{
+    if (m_data.lightEnable[light] != enable)
+    {
+        setDataChangedFlag();
+    }
+    m_data.lightEnable[light] = enable;
+}
+
+void LightingSetter::setAmbientColorLight(const std::size_t light, const Vec4& color)
+{
+    m_data.lights[light].ambientColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setDiffuseColorLight(const std::size_t light, const Vec4& color)
+{
+    m_data.lights[light].diffuseColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpecularColorLight(const std::size_t light, const Vec4& color)
+{
+    m_data.lights[light].specularColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setPosLight(const std::size_t light, const Vec4& pos)
+{
+    m_data.lights[light].position = pos;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setConstantAttenuationLight(const std::size_t light, const float val)
+{
+    m_data.lights[light].constantAttenuation = val;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setLinearAttenuationLight(const std::size_t light, const float val)
+{
+    m_data.lights[light].linearAttenuation = val;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setQuadraticAttenuationLight(const std::size_t light, const float val)
+{
+    m_data.lights[light].quadraticAttenuation = val;
+    setDataChangedFlag();
+}
+
+void LightingSetter::enableTwoSideModel(const bool enable)
+{
+    m_data.enableTwoSideModel = enable;
+    setDataChangedFlag();
+}
+
+void LightingSetter::enableColorMaterial(bool emission, bool ambient, bool diffuse, bool specular)
+{
+    m_data.enableColorMaterialEmission = emission;
+    m_data.enableColorMaterialAmbient = ambient;
+    m_data.enableColorMaterialDiffuse = diffuse;
+    m_data.enableColorMaterialSpecular = specular;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setEmissionColorMaterial(const Vec4& color)
+{
+    m_data.material.emissionColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setAmbientColorMaterial(const Vec4& color)
+{
+    m_data.material.ambientColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setAmbientColorScene(const Vec4& color)
+{
+    m_data.material.ambientColorScene = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setDiffuseColorMaterial(const Vec4& color)
+{
+    m_data.material.diffuseColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpecularColorMaterial(const Vec4& color)
+{
+    m_data.material.specularColor = color;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpecularExponentMaterial(const float val)
+{
+    m_data.material.specularExponent = val;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setColorMaterialTracking(const Face face, const ColorMaterialTracking material)
+{
+    switch (material)
+    {
+    case ColorMaterialTracking::AMBIENT:
+        if (m_enableColorMaterial)
+            enableColorMaterial(false, true, false, false);
+        break;
+    case ColorMaterialTracking::DIFFUSE:
+        if (m_enableColorMaterial)
+            enableColorMaterial(false, false, true, false);
+        break;
+    case ColorMaterialTracking::AMBIENT_AND_DIFFUSE:
+        if (m_enableColorMaterial)
+            enableColorMaterial(false, true, true, false);
+        break;
+    case ColorMaterialTracking::SPECULAR:
+        if (m_enableColorMaterial)
+            enableColorMaterial(false, false, false, true);
+        break;
+    case ColorMaterialTracking::EMISSION:
+        if (m_enableColorMaterial)
+            enableColorMaterial(true, false, false, false);
+        break;
+    default:
+        if (m_enableColorMaterial)
+            enableColorMaterial(false, true, true, false);
+        break;
+    }
+    m_colorMaterialTracking = material;
+    m_colorMaterialFace = face;
+    setDataChangedFlag();
+}
+
+void LightingSetter::enableColorMaterial(const bool enable)
+{
+    m_enableColorMaterial = enable;
+    if (enable)
+    {
+        setColorMaterialTracking(m_colorMaterialFace, m_colorMaterialTracking);
+    }
+    else
+    {
+        enableColorMaterial(false, false, false, false);
+    }
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpotlightDirection(const std::size_t light, const Vec3& dir)
+{
+    m_data.lights[light].spotlightDirection = m_modelViewMatrix.transform(dir);
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpotlightExponent(const std::size_t light, const float exponent)
+{
+    m_data.lights[light].spotlightExponent = exponent;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setSpotlightCutoff(const std::size_t light, const float cutoff)
+{
+    m_data.lights[light].spotlightCutoff = cutoff;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setEnableNormalNormalization(const bool enable)
+{
+    m_data.normalizeLightNormal = enable;
+    setDataChangedFlag();
+}
+
+void LightingSetter::setEnableNormalRescale(const bool enable)
+{
+    m_data.rescaleNormal = enable;
+    setDataChangedFlag();
+}
+
+} // namespace rr::lighting

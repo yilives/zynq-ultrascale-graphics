@@ -1,0 +1,243 @@
+{
+  "passed": true,
+  "phase": "routed",
+  "whole_design": true,
+  "used": {
+    "lut": 38050,
+    "ff": 43594,
+    "dsp": 157,
+    "bram_tiles": 71.0
+  },
+  "capacity": {
+    "lut": 70560,
+    "ff": 141120,
+    "dsp": 360,
+    "bram_tiles": 216
+  },
+  "free": {
+    "lut": 32510,
+    "ff": 97526,
+    "dsp": 203,
+    "bram_tiles": 145.0
+  },
+  "utilization_percent": {
+    "lut": 53.92573696145125,
+    "ff": 30.891439909297052,
+    "dsp": 43.611111111111114,
+    "bram_tiles": 32.870370370370374
+  },
+  "breakdown": {
+    "RasterIX_and_display": {
+      "lut": 17951,
+      "ff": 15772,
+      "dsp": 154,
+      "bram_tiles": 42.5
+    },
+    "AXI_interconnect": {
+      "lut": 9302,
+      "ff": 14116,
+      "dsp": 0,
+      "bram_tiles": 0.0
+    },
+    "PL_DDR4": {
+      "lut": 7621,
+      "ff": 8960,
+      "dsp": 3,
+      "bram_tiles": 25.5
+    },
+    "DMA": {
+      "lut": 1541,
+      "ff": 2240,
+      "dsp": 0,
+      "bram_tiles": 3.0
+    },
+    "other": {
+      "lut": 1635,
+      "ff": 2506,
+      "dsp": 0,
+      "bram_tiles": 0.0
+    }
+  },
+  "children": [
+    {
+      "instance": "BSCANID.u_xsdbm_id",
+      "module": "dbg_hub_xsdbm_v3_0_6_xsdbm_id",
+      "lut": 428,
+      "ff": 741,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "touch_gpio",
+      "module": "rasterix_system_touch_gpio_0",
+      "lut": 70,
+      "ff": 105,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "axi_dma_0",
+      "module": "rasterix_system_axi_dma_0_0",
+      "lut": 1541,
+      "ff": 2240,
+      "bram_tiles": 3.0,
+      "dsp": 0
+    },
+    {
+      "instance": "control",
+      "module": "rasterix_system_control_0",
+      "lut": 99,
+      "ff": 61,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "control_decode",
+      "module": "rasterix_system_control_decode_0",
+      "lut": 673,
+      "ff": 959,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "control_protocol",
+      "module": "rasterix_system_control_protocol_0",
+      "lut": 444,
+      "ff": 621,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "gpu",
+      "module": "rasterix_system_gpu_0",
+      "lut": 17951,
+      "ff": 15772,
+      "bram_tiles": 42.5,
+      "dsp": 154
+    },
+    {
+      "instance": "pl_ddr4",
+      "module": "rasterix_system_pl_ddr4_0",
+      "lut": 7621,
+      "ff": 8960,
+      "bram_tiles": 25.5,
+      "dsp": 3
+    },
+    {
+      "instance": "pl_memory",
+      "module": "rasterix_system_pl_memory_0",
+      "lut": 4572,
+      "ff": 7089,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    },
+    {
+      "instance": "ps_memory",
+      "module": "rasterix_system_ps_memory_0",
+      "lut": 4631,
+      "ff": 6966,
+      "bram_tiles": 0.0,
+      "dsp": 0
+    }
+  ],
+  "FSR_present": false,
+  "CNN_present": false,
+  "geometry_frontend_present": false,
+  "source_pins_verified": 220,
+  "preserved_FSR_archive_sha256": "0009bffd730853ddc8ab60a3ded6239330b9c694b01f5ddbbd2daeb8c6d957e1",
+  "board_programmed": false,
+  "game_FPS_measured": false,
+  "reports": {
+    "bus-skew.rpt": "28419ec6f67deac49c6c76368b5bd9350d9e64db29a3994126a8a54993ffce0e",
+    "cdc.rpt": "637e4206c65e7fdbc3b824efa1e5f0e4252c0d305b49da54b205b42a9883bdc1",
+    "drc.rpt": "51c0a62e875679311c8ce2d61c41e65d7c47286d9b39e428b46d8138b1c2493e",
+    "route.rpt": "14156b2a6f1dc0ec08a97580cfcb8ae356a88e5c6997e863751e9379e63e91c6",
+    "timing.rpt": "c736f3cb6df90ed9ba0879bf89ffd1691b9022771e4f3f9a3578d90460d9e150",
+    "utilization.rpt": "f333b5c6a1a6536e7d95e90b4faedf124cad55ba07ab22ba56e0baba1de5989c",
+    "utilization_hier.rpt": "7891e8f875ea931475a6b6291ed609ad779256a0f0faa58a452fd8eb72a8603e"
+  },
+  "note": "Synthesis and routed counts are distinct stages; resource room does not establish geometry-kernel fit, timing or FPS",
+  "timing": {
+    "WNS_ns": 1.252,
+    "WHS_ns": 0.01,
+    "WPWS_ns": 0.124,
+    "setup_failing_endpoints": 0,
+    "hold_failing_endpoints": 0,
+    "pulse_failing_endpoints": 0
+  },
+  "timing_check_counts": {
+    "no_clock": 0,
+    "constant_clock": 0,
+    "pulse_width_clock": 0,
+    "unconstrained_internal_endpoints": 0,
+    "no_input_delay": 4,
+    "no_output_delay": 6,
+    "multiple_clock": 0,
+    "generated_clocks": 0,
+    "loops": 0,
+    "partial_input_delay": 0,
+    "partial_output_delay": 0,
+    "latch_loops": 0
+  },
+  "drc_rules": [
+    {
+      "rule": "DPIP-2",
+      "severity": "Warning",
+      "instances": 155
+    },
+    {
+      "rule": "DPOP-3",
+      "severity": "Warning",
+      "instances": 47
+    },
+    {
+      "rule": "DPOP-4",
+      "severity": "Warning",
+      "instances": 50
+    },
+    {
+      "rule": "PDCN-1569",
+      "severity": "Warning",
+      "instances": 3
+    },
+    {
+      "rule": "REQP-1877",
+      "severity": "Warning",
+      "instances": 4
+    },
+    {
+      "rule": "REQP-1934",
+      "severity": "Warning",
+      "instances": 2
+    },
+    {
+      "rule": "REQP-1935",
+      "severity": "Warning",
+      "instances": 2
+    },
+    {
+      "rule": "RTSTAT-10",
+      "severity": "Warning",
+      "instances": 1
+    }
+  ],
+  "drc_warning_instances": 264,
+  "bitstream": {
+    "path": "build\\minecraft-java-125\\no-fsr-base-r1\\board\\java256.bin",
+    "bytes": 4996956,
+    "sha256": "6f8b5437fccbd0a5d8500a88011404deac4866591b702aa4e5b441875721350f"
+  },
+  "provisional_geometry_plus_interfaces_cap": {
+    "lut": 20000,
+    "ff": 30000,
+    "dsp": 120,
+    "bram_tiles": 48
+  },
+  "provisional_budget_is_measured": false,
+  "with_provisional_budget": {
+    "lut": 58050,
+    "ff": 73594,
+    "dsp": 277,
+    "bram_tiles": 119.0
+  }
+}

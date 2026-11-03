@@ -1,0 +1,263 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""Optional learned postprocessing around the existing public game launchers."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import re
+import signal
+import subprocess
+import time
+import uuid
+
+GAMES = {'tuxracer': 'Tuxracer', 'neverball': 'Neverball', 'neverputt': 'Neverputt',
+         'quake': 'Quakespasm', 'quake3': 'Quake3e', 'classicube': 'ClassiCube'}
+CLIENTS = ('tuxracer', 'neverball', 'neverputt', 'quakespasm', 'quake3e',
+           'ClassiCube', 'rix-neural-style', 'rix-smoke', 'rix-glx-probe',
+           'rix-danmaku', 'th06-rix')
+# Conservative source-image masks, not native HUD/3D layer separation.
+MC_PROTECTED_RECTS = ('0,0,400,34', '0,192,400,48', '194,114,12,12')
+POST = '/opt/rasterix/postproc-touch/bin/rix-superres'
+
+
+def rectangle(value):
+    try:
+        x, y, w, h = map(int, value.split(','))
+        if x < 0 or y < 0 or w <= 0 or h <= 0 or x + w > 400 or y + h > 240:
+            raise ValueError()
+    except ValueError:
+        raise argparse.ArgumentTypeError('rectangle must be x,y,w,h inside 400x240')
+    return '%d,%d,%d,%d' % (x, y, w, h)
+
+
+def parser():
+    p = argparse.ArgumentParser(description='Launch a game with a trained INT8 neural postprocessor. Tiny oil/anime prototypes; PL requires NNS1/NNS2 firmware.')
+    p.add_argument('game', choices=GAMES)
+    p.add_argument('--style', choices=('oil', 'anime'), default='anime')
+    p.add_argument('--backend', choices=('pl-int8', 'cpu-int8'), default='pl-int8')
+    p.add_argument('--seconds', type=int, default=1800)
+    p.add_argument('--autoplay', action='store_true')
+    p.add_argument('--composition', choices=('neural', 'mc-residual'))
+    p.add_argument('--strength', type=int, default=128, metavar='0..256')
+    p.add_argument('--protect-rect', action='append', type=rectangle, default=[])
+    p.add_argument('--no-hud-protection', action='store_true',
+                   help='Disable conservative MC source-image protection rectangles')
+    p.add_argument('--model-file', type=Path, help='Explicit isolated candidate model; original models remain unchanged')
+    p.add_argument('--executable', type=Path, help=argparse.SUPPRESS)
+    p.add_argument('--attempt', default=None)
+    p.add_argument('--view-distance', type=int, choices=(16, 24, 32, 48, 64), default=32)
+    p.add_argument('--source-fps-limit', type=int, choices=(30, 60, 120),
+                   help='MC CPU submission cap; default 60 for residual styling, 120 for plain neural output')
+    p.add_argument('--present-mode', choices=('overlap', 'blocking'), default='overlap', help=argparse.SUPPRESS)
+    p.add_argument('--frame-pipeline', choices=('serial', 'overlap'), default='overlap',
+                   help='MC residual: read the next frame while processing the current frame')
+    p.add_argument('--snapshot-workers', type=int, choices=(1, 2, 4), default=4,
+                   help='MC residual: CPU workers for the owned snapshot copy')
+    p.add_argument('--snapshot-copy', choices=('paired', 'neon'), default='neon',
+                   help='MC residual: snapshot conversion implementation')
+    return p
+
+
+def validate(p, a):
+    if not 10 <= a.seconds <= 3600:
+        p.error('seconds must be between 10 and 3600')
+    if not 0 <= a.strength <= 256:
+        p.error('strength must be between 0 and 256')
+    a.attempt = a.attempt or 'neural_' + uuid.uuid4().hex[:12]
+    if re.fullmatch(r'[a-z0-9_-]{1,40}', a.attempt) is None:
+        p.error('attempt must contain 1..40 lowercase letters, digits, hyphens or underscores')
+    a.composition = a.composition or ('mc-residual' if a.game == 'classicube' else 'neural')
+    if a.game != 'classicube' and a.source_fps_limit is not None:
+        p.error('source-fps-limit currently applies only to ClassiCube')
+    if a.game == 'classicube' and a.source_fps_limit is None:
+        a.source_fps_limit = 60 if a.composition == 'mc-residual' else 120
+    if a.composition != 'mc-residual' and (a.protect_rect or a.no_hud_protection):
+        p.error('source protection rectangles require mc-residual composition')
+    return a
+
+
+def commands(a, root):
+    exe = a.executable or root / 'bin/rix-neural-style'
+    model = a.model_file or root / ('models/%s.cnn' % a.style)
+    child_attempt = a.attempt + '_game' if a.game == 'classicube' else a.attempt
+    # This isolated copy leaves final scanout restoration to this session.
+    # The released launcher must keep its independent restoration behavior.
+    game = ([str(root / 'bin/rix-classicube-neural-source'), '--external-post-owner']
+            if a.game == 'classicube' else ['rix-games', a.game])
+    game += ['--seconds', str(a.seconds), '--attempt', child_attempt]
+    if a.game == 'classicube':
+        game += ['--view-distance', str(a.view_distance), '--fps-limit', str(a.source_fps_limit)]
+    if a.autoplay:
+        game.append('--autoplay')
+    neural = [str(exe), '--model', str(model), '--backend', a.backend, '--live',
+              '--seconds', str(a.seconds), '--present-mode', a.present_mode]
+    rects = []
+    if a.composition == 'mc-residual':
+        # Existing generic sessions remain compatible with the older binary.
+        rects = ([] if a.no_hud_protection or a.game != 'classicube' else list(MC_PROTECTED_RECTS)) + a.protect_rect
+        neural += ['--composition', 'mc-residual', '--strength', str(a.strength)]
+        neural += ['--frame-pipeline', a.frame_pipeline, '--snapshot-workers', str(a.snapshot_workers),
+                   '--snapshot-copy', a.snapshot_copy]
+        for rect in rects:
+            neural += ['--protect-rect', rect]
+    return exe, model, child_attempt, game, neural, rects
+
+
+def status():
+    return json.loads(subprocess.check_output(['plgpuctl', 'status'], text=True))
+
+
+def source_ready(a, out, child_attempt, before, current, result_root):
+    log = result_root / child_attempt / 'game.log' if a.game == 'classicube' else out / 'game.log'
+    marker = 'RIX_MEASURE_BEGIN' if a.game == 'classicube' else 'PL_POSTPROCESS_ACTIVE'
+    return (log.is_file() and marker in log.read_text(errors='replace') and
+            ((current['presented'] - before['presented']) & 0xffffffff) >= 3)
+
+
+def shutdown(a, game, nn):
+    """Release NN display ownership before the game launcher restores scanout."""
+    failures = []
+    if nn is not None:
+        if nn.poll() is None:
+            nn.terminate()
+        try:
+            nn.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            return ['neural processor did not stop; game remains under its original duration limit to preserve display ownership']
+    if game is None or game.poll() is not None:
+        return failures
+    if a.game == 'classicube':
+        # Native SIGTERM exits at a frame boundary and drains through its launcher.
+        game.terminate()
+        try:
+            game.wait(timeout=20)
+        except subprocess.TimeoutExpired:
+            failures.append('ClassiCube launcher did not drain; no forced DMA termination was attempted')
+    else:
+        helper = '/opt/rasterix/experimental/game_x11_control.py'
+        deadline = time.monotonic() + 30
+        while game.poll() is None and time.monotonic() < deadline:
+            try:
+                subprocess.run(['python3', helper, 'close', '--window', GAMES[a.game]],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+            except subprocess.TimeoutExpired:
+                pass
+            time.sleep(0.3)
+        if game.poll() is None:
+            failures.append('game did not accept WM_DELETE; it remains under its original duration limit (no forced DMA termination)')
+        else:
+            game.wait(timeout=1)
+    return failures
+
+
+def run_session(a, root, result_root=Path('/tmp/postproc-tests'), status_fn=status, stopped=lambda: False, post_before=None):
+    exe, model, child_attempt, game_command, neural_command, rects = commands(a, root)
+    exe_sha256 = hashlib.sha256(exe.read_bytes()).hexdigest()
+    model_sha256 = hashlib.sha256(model.read_bytes()).hexdigest()
+    before = status_fn()
+    out = result_root / a.attempt
+    out.mkdir(parents=True, exist_ok=False)
+    game = nn = None
+    failure = None
+    with open(out / 'game.log', 'w') as game_log, open(out / 'neural.log', 'w') as neural_log:
+        try:
+            game = subprocess.Popen(game_command, stdout=game_log, stderr=subprocess.STDOUT, start_new_session=True)
+            deadline = time.monotonic() + 60
+            while not stopped():
+                if game.poll() is not None:
+                    raise RuntimeError('game exited before its first frames; inspect game.log and the original game attempt')
+                if source_ready(a, out, child_attempt, before, status_fn(), result_root):
+                    break
+                if time.monotonic() > deadline:
+                    raise RuntimeError('no game source frames within 60 seconds')
+                time.sleep(0.2)
+            if not stopped():
+                nn = subprocess.Popen(neural_command, stdout=neural_log, stderr=subprocess.STDOUT, start_new_session=True)
+                print('NEURAL_GAME_STARTED game=%s style=%s backend=%s composition=%s logs=%s' %
+                      (a.game, a.style, a.backend, a.composition, out), flush=True)
+                while not stopped() and game.poll() is None:
+                    if nn.poll() is not None:
+                        if nn.returncode != 0:
+                            raise RuntimeError('neural processor failed; inspect neural.log')
+                        break
+                    time.sleep(0.2)
+        except Exception as error:
+            failure = str(error)
+        finally:
+            cleanup = shutdown(a, game, nn)
+            if cleanup:
+                failure = '; '.join(([failure] if failure else []) + cleanup)
+    metrics = None
+    for line in (out / 'neural.log').read_text().splitlines():
+        if line.startswith('{'):
+            try:
+                metrics = json.loads(line)
+            except ValueError:
+                failure = failure or 'invalid neural metrics JSON'
+    files_unchanged = hashlib.sha256(exe.read_bytes()).hexdigest() == exe_sha256 and hashlib.sha256(model.read_bytes()).hexdigest() == model_sha256
+    if not files_unchanged:
+        failure = 'neural executable or model changed during this session'
+    post_restored = False
+    # A natural game exit may restore its mode before NN retires its final
+    # frame. Restore once more only after BOTH owners have definitely exited.
+    if post_before is not None and (game is None or game.poll() is not None) and (nn is None or nn.poll() is not None):
+        try:
+            mode = {0: 'nearest', 1: 'bilinear'}[post_before & 3]
+            subprocess.run([POST, '--pl-mode', mode, '--style', str((post_before >> 4) & 3)],
+                           check=True, stdout=subprocess.DEVNULL, timeout=5)
+            post_restored = True
+        except (KeyError, subprocess.SubprocessError, OSError) as error:
+            failure = failure or 'final display-mode restore failed: ' + str(error)
+    after = status_fn()
+    errors = ('read_errors', 'write_errors', 'timeouts', 'underflows', 'scan_errors')
+    if any(after.get(k, 0) != before.get(k, 0) or after.get(k, 0) != 0 for k in errors):
+        failure = failure or 'GPU transport/display fault during neural session'
+    result = {'game': a.game, 'style': a.style, 'backend': a.backend, 'composition': a.composition,
+              'source_fps_limit': a.source_fps_limit if a.game == 'classicube' else None,
+              'frame_pipeline': a.frame_pipeline if a.composition == 'mc-residual' else None,
+              'snapshot_workers': a.snapshot_workers if a.composition == 'mc-residual' else None,
+              'snapshot_copy': a.snapshot_copy if a.composition == 'mc-residual' else None,
+              'strength': a.strength, 'protected_rects': rects,
+              'hud_protection': 'conservative source rectangles; native GUI is not a separate layer' if rects else 'none',
+              'game_attempt': child_attempt, 'game_command': game_command, 'neural_command': neural_command,
+              'game_exit': game.poll() if game else None,
+              'neural_executable_sha256': exe_sha256, 'model_sha256': model_sha256, 'files_unchanged': files_unchanged,
+              'neural_exit': nn.poll() if nn else None, 'metrics': metrics, 'stopped': stopped(),
+              'post_before': post_before, 'post_restored_after_both_exited': post_restored,
+              'error': failure, 'before': before, 'after': after, 'logs': str(out)}
+    result['passed'] = not failure and game is not None and game.poll() == 0 and nn is not None and nn.poll() == 0 and metrics is not None and metrics.get('processed_frames', 0) > 0
+    (out / 'session.json').write_text(json.dumps(result, indent=2) + '\n')
+    print('NEURAL_GAME_RESULT', json.dumps(result), flush=True)
+    return result
+
+
+def main(argv=None):
+    p = parser()
+    a = validate(p, p.parse_args(argv))
+    if a.backend == 'pl-int8' and not Path('/proc/device-tree/neural-style@a0030000/compatible').exists():
+        p.error('NNS1/NNS2 FPGA firmware/device tree is required; no game or new register was accessed')
+    root = Path(__file__).resolve().parents[1]
+    exe, model, _, _, _, _ = commands(a, root)
+    if not exe.is_file() or not model.is_file():
+        p.error('install the requested neural runtime and trained model first')
+    active = subprocess.run(['pidof', *CLIENTS], stdout=subprocess.PIPE)
+    if active.returncode == 0 or active.stdout:
+        p.error('another GPU or neural client is running')
+    for module in ('rix_dma_proxy', 'plgpu_display'):
+        if module + ' ' not in Path('/proc/modules').read_text():
+            subprocess.run(['insmod', '/opt/rasterix/modules/' + module + '.ko'], check=True)
+    post_before = json.loads(subprocess.check_output([POST, '--status'], text=True))['requested']
+    if (post_before & 3) > 1:
+        p.error('an existing native/neural scanout must be stopped before starting this session')
+    stopping = [False]
+    def stop(_signal, _frame):
+        stopping[0] = True
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
+    result = run_session(a, root, stopped=lambda: stopping[0], post_before=post_before)
+    return 0 if result['passed'] else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

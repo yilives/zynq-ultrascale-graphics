@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "decision_date": "2026-10-30",
+  "artifact_attempt": "r3",
+  "route": "arm-geometry-rasterix-pixels",
+  "game": "Minecraft Java 1.2.5",
+  "geometry_frontend": "ARM",
+  "pixel_backend": "PL RasterIX",
+  "mali_enabled": false,
+  "vortex_migration": "abandoned_by_user",
+  "full_hls_geometry_migration": "abandoned_by_user",
+  "library": {
+    "path": "build/minecraft-java-125/sequential-batch/libGL-sequential.so.1",
+    "sha256": "8e89c36f66e497f26044c779551e5703fbbb7a1a02ff938c76315d8c99d4a993",
+    "metadata_directory": "build/minecraft-java-125/sequential-batch"
+  },
+  "hardware": {
+    "path": "build/minecraft-java-125/dual-tmu/board/java256.bin",
+    "sha256": "14fd58da8a1a0348b0033f7efef35dc5498c2f4bd1f2a3c43b77404adc9cd961",
+    "tmu_count": 2,
+    "max_texture_size": 256,
+    "render": [400, 240],
+    "display": [800, 480],
+    "fpga_geometry_present": false,
+    "fsr_present": true,
+    "cnn": "stub"
+  },
+  "environment": {
+    "RIX_JAVA_FPGA_GEOMETRY": "0",
+    "RIX_JAVA_BATCH_CACHE_BYPASS": "1",
+    "RIX_JAVA_DEFER_TEXTURE_WAIT": "0"
+  },
+  "java_presentation": "nearest",
+  "quality_profile": "original",
+  "visual_reference": "report/minecraft-java-125/swap-fence/board-acceptance-r131.json",
+  "visual_settings": {
+    "viewDistance": 3,
+    "fpsLimit": 1,
+    "fancyGraphics": false,
+    "clouds": false,
+    "difficulty": 0,
+    "ao": true,
+    "particles": 0,
+    "bobView": true,
+    "advancedOpengl": false,
+    "anaglyph3d": false,
+    "fov": 0.0,
+    "gamma": 0.0
+  },
+  "pl_fsr_sources": "preserved",
+  "pl_fsr_archive": {
+    "path": "preserved/pl-fsr-v23-20261029/snapshot.tar.gz",
+    "sha256": "0009bffd730853ddc8ab60a3ded6239330b9c694b01f5ddbbd2daeb8c6d957e1"
+  },
+  "sequential_selection": {
+    "evidence": "report/minecraft-java-125/swap-fence/cache-tiny-r121-comparison/summary.json",
+    "rounds": ["r122", "r123", "r124", "r125"],
+    "baseline_fps": 23.592977183273995,
+    "selected_fps": 25.375058148437432,
+    "observed_change_percent": 7.5534382596988525,
+    "readback_sha256": "bd5c4c26c91c12d0934649aa5bc3a722cf2a4b5f63b58ec2ae7b7fd35987cfb5",
+    "scope": "Same-quality actual-Tiny stationary peaceful ABBA; not stable32/60Hz or moving-route validation"
+  },
+  "deployment": "Prepare locally; reuse the existing guarded board loader; no automatic board or SD writes"
+}

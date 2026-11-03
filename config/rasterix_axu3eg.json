@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "board": "ALINX AXU3EG (factory 2020.1 reference)",
+  "part": "xczu3eg-sfvc784-1-i",
+  "vivado": "2026.1",
+  "sources": {
+    "RasterIX": "9269a01c9bd4c3342bfa70ef8e3cdd751c15c6d0",
+    "tuxracer": "7ab4f8cd3ac53df8e0cbdc03ead22a9af5506181",
+    "tuxracer_original_rasterix": "f28d01201e35aba8b0f03bf3287a583d2418b563",
+    "alinx_board": "fb0eb1af6e97241a18be144e4f486d61ddd828e2"
+  },
+  "render": {
+    "width": 400,
+    "height": 240,
+    "format": "RGB565",
+    "stride": 800
+  },
+  "display": {
+    "width": 800,
+    "height": 480,
+    "format": "XRGB8888",
+    "stride": 1600,
+    "slots": [
+      0,
+      1048576
+    ]
+  },
+  "gpu_hz": 100000000,
+  "rtl": {
+    "VARIANT": "if",
+    "FRAMEBUFFER_SIZE_IN_PIXEL_LG": 15,
+    "FRAMEBUFFER_SUB_PIXEL_WIDTH": 5,
+    "FRAMEBUFFER_ENABLE_ALPHA_CHANNEL": 0,
+    "ENABLE_DEPTH_BUFFER": 1,
+    "ENABLE_STENCIL_BUFFER": 0,
+    "TMU_COUNT": 1,
+    "MAX_TEXTURE_SIZE": 128,
+    "ENABLE_TEXTURE_FILTERING": 1,
+    "ENABLE_MIPMAPPING": 1,
+    "ENABLE_FOG": 1,
+    "RASTERIZER_ENABLE_FLOAT_INTERPOLATION": 0,
+    "RASTERIZER_FIXPOINT_PRECISION": 25,
+    "SUB_PIXEL_CALC_PRECISION": 8,
+    "TEXTURE_PAGE_SIZE": 2048,
+    "DATA_WIDTH": 64,
+    "ADDR_WIDTH": 32,
+    "ID_WIDTH": 6
+  },
+  "memory": {
+    "ps_gfx_base": 1610612736,
+    "size": 33554432,
+    "color_offsets": [
+      0,
+      1048576,
+      2097152
+    ],
+    "depth_offset": 3145728,
+    "stencil_offset": 4194304,
+    "resource_offset": 8388608,
+    "resource_size": 25165824
+  },
+  "dma": {
+    "abi": 2,
+    "buffer_size": 1048576,
+    "buffer_count": 8,
+    "alignment": 1024
+  },
+  "software": {
+    "threaded": true,
+    "autoload": true,
+    "vsync": true,
+    "display_list_bytes": 4194304
+  },
+  "board_config": {
+    "ps_preset_tcl": "config/axu3eg_ps_preset.tcl",
+    "verified": true,
+    "verification_scope": "factory source DDR/MIO and new DT reservation; physical board pending",
+    "evidence": "report/board_source_verification.json",
+    "preset_sha256": "6733bafe1e90fde0226ba2ae28676817d3c0a83784837d93e40b13b86620e258"
+  },
+  "quality": {
+    "max_texture_size": 128,
+    "target_fps": 30,
+    "course": null,
+    "assets_verified": false
+  }
+}

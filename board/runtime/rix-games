@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+from game_optimization_trial import main
+raise SystemExit(main())

@@ -1,0 +1,56 @@
+#!/bin/sh
+set -eu
+base=/opt/rasterix/touhou
+runtime="$base/th06-runtime"
+quality=${TH06_TEXTURE_MODE:-balanced}
+filter=nearest
+style=0
+autoplay=0
+touch=${TH06_TOUCH:-1}
+seconds=${TH06_RUN_SECONDS:-}
+usage(){
+    echo 'Usage: rix-th06-run [--quality balanced|native|scaled] [--filter nearest|bilinear]'
+    echo '                    [--style original|poster|sepia|binary] [--autoplay] [--seconds 5..1800]'
+    echo '                    [--touch|--no-touch]'
+}
+while test "$#" -gt 0; do
+    case "$1" in
+        --help|-h) usage; exit 0 ;;
+        --autoplay) autoplay=1; shift ;;
+        --touch) touch=1; shift ;;
+        --no-touch) touch=0; shift ;;
+        --quality|--filter|--style|--seconds)
+            test "$#" -ge 2 || { usage >&2; exit 2; }
+            case "$1" in --quality) quality=$2 ;; --filter) filter=$2 ;; --style) style=$2 ;; --seconds) seconds=$2 ;; esac
+            shift 2 ;;
+        *[!0-9]*|'') usage >&2; exit 2 ;;
+        *) seconds=$1; shift ;;
+    esac
+done
+case "$quality" in balanced|native|scaled) ;; *) usage >&2; exit 2 ;; esac
+case "$filter" in nearest|bilinear) ;; *) usage >&2; exit 2 ;; esac
+case "$style" in original|0) style=0 ;; poster|1) style=1 ;; sepia|2) style=2 ;; binary|3) style=3 ;; *) usage >&2; exit 2 ;; esac
+if test -n "$seconds"; then
+    case "$seconds" in *[!0-9]*) usage >&2; exit 2 ;; esac
+    test "$seconds" -ge 5 && test "$seconds" -le 1800 || exit 2
+fi
+if pidof tuxracer neverball neverputt quake3e quakespasm rix-danmaku rix-superres th06-rix >/dev/null; then
+    echo 'Stop the active GPU client before starting TH06.' >&2
+    exit 1
+fi
+test -c /dev/dma_proxy_tx || insmod /opt/rasterix/modules/rix_dma_proxy.ko
+test -c /dev/plgpu_display || insmod /opt/rasterix/modules/plgpu_display.ko
+/opt/rasterix/postproc-touch/bin/rix-superres --pl-mode "$filter" --style "$style"
+mkdir -p "$base/profile"
+for source in "$base"/th06-demo/*; do
+    test -f "$source" || continue
+    ln -sfn "$source" "$base/profile/$(basename "$source")"
+done
+export DISPLAY=:0 SDL_VIDEODRIVER=x11 SDL_AUDIODRIVER=dummy LANG=C LC_ALL=C
+export LD_LIBRARY_PATH="$runtime/lib"
+export TH06_TEXTURE_MODE="$quality"
+export TH06_TOUCH="$touch"
+if test "$autoplay" -eq 1; then export TH06_AUTOPLAY=1; else unset TH06_AUTOPLAY; fi
+if test -n "$seconds"; then export TH06_RUN_SECONDS="$seconds"; fi
+cd "$base/profile"
+exec "$runtime/bin/th06-rix"

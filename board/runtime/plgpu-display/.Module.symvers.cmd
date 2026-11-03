@@ -1,0 +1,1 @@
+savedcmd_/mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/Module.symvers -T /mnt/f/1FPGA/Xilinxprj/prj2/rasterix-linux/linux/plgpu-display/modules.order -i Module.symvers -e 

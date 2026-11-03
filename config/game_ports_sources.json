@@ -1,0 +1,51 @@
+{
+  "neverball": {
+    "repository": "https://github.com/Neverball/neverball",
+    "ref": "neverball-1.6.0",
+    "commit": "16945b8abe77fdaf0d3b6728f7cd25819bb0a707",
+    "archive_url": "https://codeload.github.com/Neverball/neverball/tar.gz/16945b8abe77fdaf0d3b6728f7cd25819bb0a707",
+    "archive_sha256": "d7d1e507d8b00d29e0122b627615333feedd3792b469d5264876d23dbfda3d78"
+  },
+  "quake3e": {
+    "repository": "https://github.com/ToNi3141/Quake3e",
+    "ref": "master",
+    "commit": "914fc4007d8145a14c8473a6503e9e5f0e9e3d1c",
+    "archive_url": "https://codeload.github.com/ToNi3141/Quake3e/tar.gz/914fc4007d8145a14c8473a6503e9e5f0e9e3d1c",
+    "archive_sha256": "5d041464734badd32ffe351d668a899585e4be23aa5223dbb138f0c0d09f04eb"
+  },
+  "quakespasm": {
+    "repository": "https://github.com/sezero/quakespasm",
+    "ref": "quakespasm-0.93.2",
+    "commit": "93aca471a36f4a7b0a933fa367f308134af90847",
+    "archive_url": "https://codeload.github.com/sezero/quakespasm/tar.gz/93aca471a36f4a7b0a933fa367f308134af90847",
+    "archive_sha256": "c817ad70dd3292da3f48b45067d70d7684e3a96b1ab2814a2e28997bfda97624"
+  },
+  "SDL2_ttf": {
+    "repository": "https://github.com/libsdl-org/SDL_ttf",
+    "ref": "release-2.0.18",
+    "commit": "3e702ed9bf400b0a72534f144b8bec46ee0416cb",
+    "archive_url": "https://codeload.github.com/libsdl-org/SDL_ttf/tar.gz/3e702ed9bf400b0a72534f144b8bec46ee0416cb",
+    "archive_sha256": "1bffe4e59a43878ee95ca7e29f6b3bd11fd7de3173496568f0b95c6c43afebb2"
+  },
+  "ioq3-game": {
+    "repository": "https://github.com/ioquake/ioq3",
+    "ref": "HEAD",
+    "commit": "87a99d18206e878a20289f05ac3c16005dcae5c3",
+    "archive_url": "https://codeload.github.com/ioquake/ioq3/tar.gz/87a99d18206e878a20289f05ac3c16005dcae5c3",
+    "archive_sha256": "8c0c2cdc2326a5f303afe09914b445609780f1ff9337fab5224afc33607bf720"
+  },
+  "arm-asr": {
+    "repository": "https://github.com/arm/accuracy-super-resolution-generic-library",
+    "ref": "HEAD",
+    "commit": "0501f490bd9946a2e1806b5363d7ab8a9a6a5e0a",
+    "archive_url": "https://codeload.github.com/arm/accuracy-super-resolution-generic-library/tar.gz/0501f490bd9946a2e1806b5363d7ab8a9a6a5e0a",
+    "archive_sha256": "4be2c6387eaab43213be919c49b8b40a0af237311172632ca9420064cd2e2e08"
+  },
+  "fsr1": {
+    "repository": "https://github.com/GPUOpen-Effects/FidelityFX-FSR",
+    "ref": "HEAD",
+    "commit": "a21ffb8f6c13233ba336352bdff293894c706575",
+    "archive_url": "https://codeload.github.com/GPUOpen-Effects/FidelityFX-FSR/tar.gz/a21ffb8f6c13233ba336352bdff293894c706575",
+    "archive_sha256": "b529a31d21971ee9f2a3231bbe17e31d183ccbb7fb6e3f7b0508b2624f61c2d9"
+  }
+}

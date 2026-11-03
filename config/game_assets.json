@@ -1,0 +1,10 @@
+{
+  "version": "tuxracer-data-0.61",
+  "source_page": "https://tuxracer.sourceforge.net/download.html",
+  "url": "https://downloads.sourceforge.net/project/tuxracer/tuxracer-data/0.61/tuxracer-data-0.61.tar.gz",
+  "sha256": "3783d204b7bb1ed16aa5e5a1d5944de10fbee05bc7cebb8f616fce84301f3651",
+  "sha256_source": "https://sourceforge.net/projects/tuxracer/files/tuxracer-data/0.61/tuxracer-data-0.61.tar.gz/download",
+  "acceptance_course": "bunny_hill",
+  "target_directory": "/usr/local/share/tuxracer",
+  "board_validation": "pending"
+}

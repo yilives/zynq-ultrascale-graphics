@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "games": [
+    {
+      "id": "tuxracer",
+      "title": "Tux Racer",
+      "category": "leisure",
+      "genre": "雪山竞速",
+      "description": "沿着雪山赛道滑行，收集鲱鱼，冲向终点。",
+      "controls": "方向键转向 · 空格跳跃",
+      "image": "report/board_serial/race_running_readback.png",
+      "adapter": "standard"
+    },
+    {
+      "id": "neverball",
+      "title": "Neverball",
+      "category": "leisure",
+      "genre": "平衡闯关",
+      "description": "倾斜世界，让小球穿过障碍，收集金币。",
+      "controls": "鼠标倾斜 · Esc 游戏菜单",
+      "image": "report/game-optimization-20261019/captures/ball_final03.png",
+      "adapter": "standard"
+    },
+    {
+      "id": "neverputt",
+      "title": "Neverputt",
+      "category": "leisure",
+      "genre": "迷你高尔夫",
+      "description": "找准角度与力度，在迷你球场完成漂亮的一杆。",
+      "controls": "鼠标瞄准与击球",
+      "image": "report/game-optimization-20261019/captures/putt_final03.png",
+      "adapter": "standard"
+    },
+    {
+      "id": "quake",
+      "title": "Quake",
+      "category": "action",
+      "genre": "经典射击",
+      "description": "走进经典关卡，探索暗道，迎接下一场战斗。",
+      "controls": "WASD 移动 · 鼠标瞄准",
+      "image": "report/game-optimization-20261019/captures/quake_final03.png",
+      "adapter": "standard"
+    },
+    {
+      "id": "quake3",
+      "title": "Quake III Arena",
+      "category": "action",
+      "genre": "竞技射击",
+      "description": "进入竞技场，体验快节奏的移动与对战。",
+      "controls": "WASD 移动 · 鼠标瞄准",
+      "image": "report/game-optimization-20261019/captures/q3_final03.png",
+      "adapter": "standard"
+    },
+    {
+      "id": "touhou",
+      "title": "东方 · 红魔乡",
+      "category": "action",
+      "genre": "弹幕 · 体验版",
+      "description": "穿梭弹幕之间，挑战幻想乡的经典关卡。",
+      "controls": "方向键移动 · Z 射击 · Shift 低速",
+      "image": "report/touhou/opt2/game-frame.png",
+      "adapter": "special",
+      "edition": "官方 0.13 体验版"
+    },
+    {
+      "id": "classicube",
+      "title": "ClassiCube",
+      "category": "voxel",
+      "genre": "方块沙盒",
+      "description": "探索方块世界，拆除、建造，创造自己的空间。",
+      "controls": "WASD 移动 · 鼠标建造",
+      "image": "report/classicube/cc_gameplay_v4/native.png",
+      "adapter": "special"
+    },
+    {
+      "id": "minecraft-java",
+      "title": "Minecraft Java",
+      "category": "voxel",
+      "genre": "原版 1.2.5",
+      "description": "回到早期的我的世界，继续探索与创造。",
+      "controls": "WASD 移动 · 鼠标交互 · E 背包",
+      "image": "report/minecraft-java-125/swap-fence/r134-board/world-active.png",
+      "adapter": "special"
+    },
+    {
+      "id": "arcade-snake",
+      "title": "贪吃蛇",
+      "category": "leisure",
+      "genre": "贪吃蛇",
+      "description": "吃到食物后增长，避开边界和自己的身体。",
+      "controls": "方向键转向 · P 暂停 · R 重开",
+      "image": "report/library-v4/previews/arcade-snake.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "arcade-blocks",
+      "title": "落块消行",
+      "category": "leisure",
+      "genre": "落块益智",
+      "description": "七袋随机方块、消行计分、下一块预览与落点提示。",
+      "controls": "方向键移动旋转 · 空格落下",
+      "image": "report/library-v4/previews/arcade-blocks.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "arcade-breakout",
+      "title": "打砖块",
+      "category": "leisure",
+      "genre": "街机闯关",
+      "description": "反弹小球击碎砖块，保留三条生命，挑战三轮关卡。",
+      "controls": "鼠标或左右键 · 空格发球",
+      "image": "report/library-v4/previews/arcade-breakout.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "arcade-2048",
+      "title": "2048",
+      "category": "leisure",
+      "genre": "数字合并",
+      "description": "合并相同数字，向 2048 挑战，支持一步撤销。",
+      "controls": "方向键滑动 · U 撤销",
+      "image": "report/library-v4/previews/arcade-2048.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "arcade-sokoban",
+      "title": "推箱子",
+      "category": "leisure",
+      "genre": "推箱解谜",
+      "description": "六个可解关卡，把每个箱子推到目标上。",
+      "controls": "方向键移动 · U 撤销 · N 下一关",
+      "image": "report/library-v4/previews/arcade-sokoban.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "arcade-mines",
+      "title": "扫雷",
+      "category": "leisure",
+      "genre": "逻辑解谜",
+      "description": "9×9 雷区、首次点击安全、连开与胜负判定。",
+      "controls": "左键翻开 · 右键插旗 · F 标记",
+      "image": "report/library-v4/previews/arcade-mines.png",
+      "adapter": "library",
+      "edition": "原生经典规则实现",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    },
+    {
+      "id": "rrootage",
+      "title": "rRootage",
+      "category": "action",
+      "genre": "弹幕挑战",
+      "description": "四种弹幕玩法，挑战程序生成的巨大敌舰。",
+      "controls": "方向键移动 · Z 射击 · X 特殊能力 · P 暂停",
+      "image": "report/library-v4/previews/rrootage.png",
+      "adapter": "library",
+      "edition": "完整开源游戏；音频未接",
+      "preview_origin": "board GPU RGB565 readback, verified against 6000 LCD points"
+    }
+  ]
+}

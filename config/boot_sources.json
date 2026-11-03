@@ -1,0 +1,23 @@
+{
+  "TF-A": {
+    "repository": "https://github.com/Xilinx/arm-trusted-firmware",
+    "tag": "xilinx-v2026.1",
+    "commit": "e828ec25463d328f1591b6fa0d5a38886fad8d31",
+    "archive": "arm-trusted-firmware-2026.1.tar.gz",
+    "sha256": "36f16b98e3558b3cbb4eb3587cc5866bea4c94df826468e99685730438fb13b5",
+    "source_directory": "arm-trusted-firmware-e828ec25463d328f1591b6fa0d5a38886fad8d31"
+  },
+  "U-Boot": {
+    "repository": "https://github.com/Xilinx/u-boot-xlnx",
+    "tag": "xilinx-v2026.1",
+    "commit": "c4abf697920c6b4a2f3e24da5721fb27fa2e4ce6",
+    "archive": "u-boot-xlnx-2026.1.tar.gz",
+    "sha256": "df0303b88996f8f760648c01eb575f3bb00666290881c8bbf61c8e46c5a44a22",
+    "source_directory": "u-boot-xlnx-c4abf697920c6b4a2f3e24da5721fb27fa2e4ce6"
+  },
+  "rootfs": {
+    "archive": "G:\\baidudownload\\zynq_soft_2020\\petalinux\\sdk\\rootfs.tar.gz",
+    "sha256": "29c515f073343b2e6b72adf6b5a264a421fbca7aad3d88db99d413f704944cd5",
+    "provided_version": "PetaLinux 2020.1 rootfs from the supplied SDK folder"
+  }
+}

@@ -1,0 +1,659 @@
+{
+  "evidence_verified": true,
+  "accepted_performance_run": false,
+  "revision": "r134",
+  "original_jar_unchanged": true,
+  "actual_tmu_count": 2,
+  "source_size": [
+    400,
+    240
+  ],
+  "texture_max": [
+    256,
+    256
+  ],
+  "source_save_unchanged": true,
+  "original_v23_restored": true,
+  "java_fps": 24.897452208559134,
+  "measurement_seconds": 31.007188749,
+  "completed_world_frames": 772,
+  "world_frame_sha256": "235dcb1e01a13bd145faa624e43515396723f66a96d0a86712952a6520a2b9cf",
+  "graphics_sha256": "384df55f256b8666ff92936c6d7e2a45d585546f243cb17bb7702c807ae1cc18",
+  "evidence_sha256": "4f94309f7d830f2869e769204cf4ee29684d4a037dff0cecbbf498afccbba005",
+  "profile_summary": {
+    "java_world_begin_ns": 815878652427,
+    "java_world_end_ns": 847116146998,
+    "dma_window_seconds": 30.630482092,
+    "dma_delta": {
+      "tx": 14992,
+      "waits": 14992,
+      "tx_ns": 167366498,
+      "wait_ns": 8693158827,
+      "stream_bytes": 772276468,
+      "store_bytes": 218871152,
+      "load_bytes": 0,
+      "other_bytes": 0,
+      "stream_calls": 4578,
+      "store_calls": 10414
+    },
+    "dma_mib_per_second": 30.85919529840032,
+    "texture_store_fraction": 0.2208259875557185,
+    "dma_finish_wait_fraction": 0.2838074438688139,
+    "dma_start_ioctl_fraction": 0.0054640504023837225,
+    "cpu_window_seconds": 30.748147859,
+    "threads": [
+      {
+        "tid": 1216,
+        "comm": "Minecraft main ",
+        "cpu_percent": 64.62177849253462,
+        "cpu_seconds": 19.87
+      },
+      {
+        "tid": 1213,
+        "comm": "Minecraft main ",
+        "cpu_percent": 24.814502762860542,
+        "cpu_seconds": 7.63
+      },
+      {
+        "tid": 1202,
+        "comm": "C2 CompilerThre",
+        "cpu_percent": 3.609973534308677,
+        "cpu_seconds": 1.11
+      },
+      {
+        "tid": 1203,
+        "comm": "C2 CompilerThre",
+        "cpu_percent": 2.8619610001726445,
+        "cpu_seconds": 0.88
+      },
+      {
+        "tid": 1234,
+        "comm": "File IO Thread",
+        "cpu_percent": 0.9756685227861288,
+        "cpu_seconds": 0.3
+      },
+      {
+        "tid": 1228,
+        "comm": "Thread-8",
+        "cpu_percent": 0.5528788295788064,
+        "cpu_seconds": 0.17
+      },
+      {
+        "tid": 1217,
+        "comm": "Minecraft main ",
+        "cpu_percent": 0.5203565454859354,
+        "cpu_seconds": 0.16
+      },
+      {
+        "tid": 1209,
+        "comm": "AWT-XAWT",
+        "cpu_percent": 0.22765598865009679,
+        "cpu_seconds": 0.07
+      },
+      {
+        "tid": 1204,
+        "comm": "C1 CompilerThre",
+        "cpu_percent": 0.19513370455722576,
+        "cpu_seconds": 0.06
+      },
+      {
+        "tid": 1207,
+        "comm": "java-world-inpu",
+        "cpu_percent": 0.06504456818574192,
+        "cpu_seconds": 0.02
+      },
+      {
+        "tid": 1206,
+        "comm": "VM Periodic Tas",
+        "cpu_percent": 0.06504456818574192,
+        "cpu_seconds": 0.02
+      },
+      {
+        "tid": 1198,
+        "comm": "VM Thread",
+        "cpu_percent": 0.03252228409287096,
+        "cpu_seconds": 0.01
+      }
+    ],
+    "diagnostic_scope": "cumulative endpoints inside active interval; instrumentation overhead not corrected",
+    "texture_dedup": {
+      "seconds": 30.755537262,
+      "delta": {
+        "input_bytes": 728616960,
+        "skipped_bytes": 508821504,
+        "written_bytes": 219795456,
+        "runs": 10459,
+        "failures": 0
+      },
+      "skipped_fraction": 0.6983388144025634,
+      "input_mib_per_second": 22.593111456015375,
+      "written_mib_per_second": 6.815464788156624
+    }
+  },
+  "scope": "Counter-clock paired 30-second window after 60s warmup; original peaceful world; no long-run guarantee",
+  "counter_aligned": true,
+  "warmup_seconds": 60,
+  "difficulty": "peaceful",
+  "prepared_probe": true,
+  "prepared_arrays": true,
+  "prepared_native_modes_identical": true,
+  "queued_probe": true,
+  "queued_arrays": true,
+  "queued_native_modes_identical": true,
+  "queued_statistics": {
+    "enabled": true,
+    "submitted_batches": 57640,
+    "submitted_vertices": 88478216,
+    "consumed_batches": 57640,
+    "consumed_vertices": 88478216,
+    "retention_drains": 0
+  },
+  "batch_cache_probe": true,
+  "batch_cache_bypass": true,
+  "batch_cache_statistics": {
+    "phase": "after_renderer_destroy",
+    "bypass_enabled": true,
+    "cached_batches": 0,
+    "cached_vertices": 0,
+    "bypass_batches": 57640,
+    "bypass_vertices": 88478216
+  },
+  "batch_cache_native_modes_identical": true,
+  "sequential_unit_verified": false,
+  "quality_comparison": true,
+  "quality_profile": "baseline",
+  "effective_visual_settings": {
+    "viewDistance": 3,
+    "fpsLimit": 1,
+    "fancyGraphics": false,
+    "clouds": false,
+    "difficulty": 0,
+    "ao": true,
+    "particles": 0,
+    "bobView": true,
+    "advancedOpengl": false,
+    "anaglyph3d": false,
+    "fov": 0.0,
+    "gamma": 0.0
+  },
+  "quality_sequential_comparison": true,
+  "effective_view_distance": 3,
+  "runtime_settings_verified": true,
+  "world_requires_band_spill": false,
+  "gpu_band_spill": true,
+  "world_gpu_band_spills": 0,
+  "teardown_drains_tail": true,
+  "final_stats_after_destroy": true,
+  "texture_dedup": true,
+  "native_partial_texture_pixels_verified": 768000,
+  "gpu_status_sampler": true,
+  "gpu_timeline": {
+    "passed": true,
+    "sample_count": 30,
+    "intervals": [
+      {
+        "seconds_from_measurement_start": 0.590194867,
+        "seconds": 1.024275732,
+        "completed_frames": 26,
+        "command_beats": 8190712,
+        "fps": 25.38378991878722,
+        "command_beats_per_frame": 315027.3846153846
+      },
+      {
+        "seconds_from_measurement_start": 1.614470599,
+        "seconds": 1.024369708,
+        "completed_frames": 25,
+        "command_beats": 8211701,
+        "fps": 24.405251155669667,
+        "command_beats_per_frame": 328468.04
+      },
+      {
+        "seconds_from_measurement_start": 2.638840307,
+        "seconds": 1.024244292,
+        "completed_frames": 26,
+        "command_beats": 8281552,
+        "fps": 25.384569094576904,
+        "command_beats_per_frame": 318521.23076923075
+      },
+      {
+        "seconds_from_measurement_start": 3.663084599,
+        "seconds": 1.025395269,
+        "completed_frames": 25,
+        "command_beats": 8456255,
+        "fps": 24.380841959979822,
+        "command_beats_per_frame": 338250.2
+      },
+      {
+        "seconds_from_measurement_start": 4.688479868,
+        "seconds": 1.024978684,
+        "completed_frames": 26,
+        "command_beats": 8194386,
+        "fps": 25.36638118027438,
+        "command_beats_per_frame": 315168.6923076923
+      },
+      {
+        "seconds_from_measurement_start": 5.713458552,
+        "seconds": 1.024158986,
+        "completed_frames": 26,
+        "command_beats": 8361698,
+        "fps": 25.386683469474534,
+        "command_beats_per_frame": 321603.76923076925
+      },
+      {
+        "seconds_from_measurement_start": 6.737617538,
+        "seconds": 1.0246607865,
+        "completed_frames": 24,
+        "command_beats": 8119589,
+        "fps": 23.422385550615587,
+        "command_beats_per_frame": 338316.2083333333
+      },
+      {
+        "seconds_from_measurement_start": 7.7622783245,
+        "seconds": 1.0242344815,
+        "completed_frames": 26,
+        "command_beats": 8293161,
+        "fps": 25.384812237450532,
+        "command_beats_per_frame": 318967.73076923075
+      },
+      {
+        "seconds_from_measurement_start": 8.786512806,
+        "seconds": 1.024190592,
+        "completed_frames": 26,
+        "command_beats": 8436648,
+        "fps": 25.385900049353314,
+        "command_beats_per_frame": 324486.46153846156
+      },
+      {
+        "seconds_from_measurement_start": 9.810703398,
+        "seconds": 1.024445609,
+        "completed_frames": 26,
+        "command_beats": 8551527,
+        "fps": 25.379580693776003,
+        "command_beats_per_frame": 328904.8846153846
+      },
+      {
+        "seconds_from_measurement_start": 10.835149007,
+        "seconds": 1.024371568,
+        "completed_frames": 26,
+        "command_beats": 8118180,
+        "fps": 25.381415115574544,
+        "command_beats_per_frame": 312237.6923076923
+      },
+      {
+        "seconds_from_measurement_start": 11.859520575,
+        "seconds": 1.024139666,
+        "completed_frames": 25,
+        "command_beats": 8439857,
+        "fps": 24.410733057184412,
+        "command_beats_per_frame": 337594.28
+      },
+      {
+        "seconds_from_measurement_start": 12.883660241,
+        "seconds": 1.024863003,
+        "completed_frames": 25,
+        "command_beats": 8207110,
+        "fps": 24.39350423112112,
+        "command_beats_per_frame": 328284.4
+      },
+      {
+        "seconds_from_measurement_start": 13.908523244,
+        "seconds": 1.025783743,
+        "completed_frames": 26,
+        "command_beats": 8357379,
+        "fps": 25.346473052848918,
+        "command_beats_per_frame": 321437.6538461539
+      },
+      {
+        "seconds_from_measurement_start": 14.934306987,
+        "seconds": 1.0242239665,
+        "completed_frames": 25,
+        "command_beats": 8112556,
+        "fps": 24.408723890176613,
+        "command_beats_per_frame": 324502.24
+      },
+      {
+        "seconds_from_measurement_start": 15.9585309535,
+        "seconds": 1.0241846965,
+        "completed_frames": 26,
+        "command_beats": 8214028,
+        "fps": 25.386046177853622,
+        "command_beats_per_frame": 315924.1538461539
+      },
+      {
+        "seconds_from_measurement_start": 16.98271565,
+        "seconds": 1.02456417,
+        "completed_frames": 25,
+        "command_beats": 8447005,
+        "fps": 24.400619045657237,
+        "command_beats_per_frame": 337880.2
+      },
+      {
+        "seconds_from_measurement_start": 18.00727982,
+        "seconds": 1.024228287,
+        "completed_frames": 26,
+        "command_beats": 8183371,
+        "fps": 25.384965763985,
+        "command_beats_per_frame": 314745.03846153844
+      },
+      {
+        "seconds_from_measurement_start": 19.031508107,
+        "seconds": 1.0242023965,
+        "completed_frames": 25,
+        "command_beats": 8326928,
+        "fps": 24.409237944992448,
+        "command_beats_per_frame": 333077.12
+      },
+      {
+        "seconds_from_measurement_start": 20.0557105035,
+        "seconds": 1.0244101785,
+        "completed_frames": 26,
+        "command_beats": 8181888,
+        "fps": 25.38045847813684,
+        "command_beats_per_frame": 314688.0
+      },
+      {
+        "seconds_from_measurement_start": 21.080120682,
+        "seconds": 1.024225572,
+        "completed_frames": 26,
+        "command_beats": 8364344,
+        "fps": 25.385033054027282,
+        "command_beats_per_frame": 321705.53846153844
+      },
+      {
+        "seconds_from_measurement_start": 22.104346254,
+        "seconds": 1.024616851,
+        "completed_frames": 24,
+        "command_beats": 7955277,
+        "fps": 23.42338990089477,
+        "command_beats_per_frame": 331469.875
+      },
+      {
+        "seconds_from_measurement_start": 23.128963105,
+        "seconds": 1.0247308065,
+        "completed_frames": 25,
+        "command_beats": 8127881,
+        "fps": 24.396651141374658,
+        "command_beats_per_frame": 325115.24
+      },
+      {
+        "seconds_from_measurement_start": 24.1536939115,
+        "seconds": 1.0244095185,
+        "completed_frames": 25,
+        "command_beats": 8190710,
+        "fps": 24.404302721246143,
+        "command_beats_per_frame": 327628.4
+      },
+      {
+        "seconds_from_measurement_start": 25.17810343,
+        "seconds": 1.0246658715,
+        "completed_frames": 25,
+        "command_beats": 8407403,
+        "fps": 24.398197202960123,
+        "command_beats_per_frame": 336296.12
+      },
+      {
+        "seconds_from_measurement_start": 26.2027693015,
+        "seconds": 1.0255817805,
+        "completed_frames": 26,
+        "command_beats": 8413198,
+        "fps": 25.35146440230663,
+        "command_beats_per_frame": 323584.53846153844
+      },
+      {
+        "seconds_from_measurement_start": 27.228351082,
+        "seconds": 1.024466084,
+        "completed_frames": 26,
+        "command_beats": 8362948,
+        "fps": 25.37907345695985,
+        "command_beats_per_frame": 321651.8461538461
+      },
+      {
+        "seconds_from_measurement_start": 28.252817166,
+        "seconds": 1.033461779,
+        "completed_frames": 26,
+        "command_beats": 8360820,
+        "fps": 25.158163106097803,
+        "command_beats_per_frame": 321570.0
+      },
+      {
+        "seconds_from_measurement_start": 29.286278945,
+        "seconds": 1.026535775,
+        "completed_frames": 27,
+        "command_beats": 8553088,
+        "fps": 26.302054597171736,
+        "command_beats_per_frame": 316781.037037037
+      }
+    ],
+    "sampled_seconds": 29.722619853,
+    "sampled_completed_frames": 741,
+    "sampled_fps": 24.93050759538643,
+    "max_get_status_span_ns": 86101,
+    "total_get_status_span_ns": 2407195,
+    "official_fps": 24.897452208559134,
+    "scope": "Interior GET_STATUS/time pairs, not a replacement for the official full-window FPS; no input-idle/raster-stall counters exist here"
+  },
+  "pipeline_diagnostic": true,
+  "pipeline_summary": {
+    "passed": true,
+    "seconds": 31.052615593,
+    "sample_begin_ns": 815899568456,
+    "sample_end_ns": 846952184049,
+    "phases": {
+      "worker": {
+        "calls": 1546,
+        "wall_ns": 21148710765,
+        "cpu_ns": 20021154380,
+        "units": 0,
+        "wall_seconds": 21.148710765,
+        "cpu_seconds": 20.02115438,
+        "wall_fraction": 0.6810605277890801,
+        "one_core_cpu_fraction": 0.6447493712740013,
+        "mean_wall_us": 13679.631801423026,
+        "units_per_second": 0.0
+      },
+      "vertex_batch": {
+        "calls": 18556,
+        "wall_ns": 18161818865,
+        "cpu_ns": 18127002313,
+        "units": 28522616,
+        "wall_seconds": 18.161818865,
+        "cpu_seconds": 18.127002313,
+        "wall_fraction": 0.5848724340339984,
+        "one_core_cpu_fraction": 0.5837512224601865,
+        "mean_wall_us": 978.757214108644,
+        "units_per_second": 918525.3948923284
+      },
+      "producer_wait_worker": {
+        "calls": 361561,
+        "wall_ns": 16669098759,
+        "cpu_ns": 433649984,
+        "units": 0,
+        "wall_seconds": 16.669098759,
+        "cpu_seconds": 0.433649984,
+        "wall_fraction": 0.5368017618057789,
+        "one_core_cpu_fraction": 0.013965006673954868,
+        "mean_wall_us": 46.10314375444254,
+        "units_per_second": 0.0
+      },
+      "wait_uploader": {
+        "calls": 2319,
+        "wall_ns": 5327474541,
+        "cpu_ns": 11511380,
+        "units": 0,
+        "wall_seconds": 5.327474541,
+        "cpu_seconds": 0.01151138,
+        "wall_fraction": 0.17156282777676674,
+        "one_core_cpu_fraction": 0.00037070564846701477,
+        "mean_wall_us": 2297.3154553686936,
+        "units_per_second": 0.0
+      },
+      "texture_upload": {
+        "calls": 1546,
+        "wall_ns": 2307629185,
+        "cpu_ns": 1181953560,
+        "units": 0,
+        "wall_seconds": 2.307629185,
+        "cpu_seconds": 1.18195356,
+        "wall_fraction": 0.07431352048553987,
+        "one_core_cpu_fraction": 0.038062930849098606,
+        "mean_wall_us": 1492.645009702458,
+        "units_per_second": 0.0
+      },
+      "upload_task": {
+        "calls": 1546,
+        "wall_ns": 6163466882,
+        "cpu_ns": 117394147,
+        "units": 0,
+        "wall_seconds": 6.163466882,
+        "cpu_seconds": 0.117394147,
+        "wall_fraction": 0.19848462888869794,
+        "one_core_cpu_fraction": 0.0037804914258644105,
+        "mean_wall_us": 3986.718552393273,
+        "units_per_second": 0.0
+      },
+      "swap_upload": {
+        "calls": 1546,
+        "wall_ns": 2348084667,
+        "cpu_ns": 1221074232,
+        "units": 0,
+        "wall_seconds": 2.348084667,
+        "cpu_seconds": 1.221074232,
+        "wall_fraction": 0.07561632481385286,
+        "one_core_cpu_fraction": 0.039322749748502965,
+        "mean_wall_us": 1518.8128505821476,
+        "units_per_second": 0.0
+      },
+      "dma_submit": {
+        "calls": 15200,
+        "wall_ns": 151971579,
+        "cpu_ns": 128761461,
+        "units": 1004438444,
+        "wall_seconds": 0.151971579,
+        "cpu_seconds": 0.128761461,
+        "wall_fraction": 0.004894002521135708,
+        "one_core_cpu_fraction": 0.004146557658383724,
+        "mean_wall_us": 9.99813019736842,
+        "units_per_second": 32346339.42483172
+      },
+      "dma_finish_stream": {
+        "calls": 4638,
+        "wall_ns": 7310914498,
+        "cpu_ns": 42226243,
+        "units": 782412188,
+        "wall_seconds": 7.310914498,
+        "cpu_seconds": 0.042226243,
+        "wall_fraction": 0.23543635079964262,
+        "one_core_cpu_fraction": 0.001359828864448984,
+        "mean_wall_us": 1576.3075674859854,
+        "units_per_second": 25196337.669422425
+      },
+      "dma_finish_store": {
+        "calls": 10562,
+        "wall_ns": 1474631485,
+        "cpu_ns": 109686547,
+        "units": 222026256,
+        "wall_seconds": 1.474631485,
+        "cpu_seconds": 0.109686547,
+        "wall_fraction": 0.04748815701478033,
+        "one_core_cpu_fraction": 0.0035322804506273528,
+        "mean_wall_us": 139.61669049422457,
+        "units_per_second": 7150001.755409294
+      },
+      "dma_finish_other": {
+        "calls": 0,
+        "wall_ns": 0,
+        "cpu_ns": 0,
+        "units": 0,
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.0,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 0.0,
+        "units_per_second": 0.0
+      },
+      "dma_lifetime_stream": {
+        "calls": 4638,
+        "wall_ns": 26451796001,
+        "cpu_ns": 0,
+        "units": 782412188,
+        "wall_seconds": 26.451796001,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.8518379368649018,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 5703.276412462268,
+        "units_per_second": 25196337.669422425
+      },
+      "dma_lifetime_store": {
+        "calls": 10562,
+        "wall_ns": 2095834197,
+        "cpu_ns": 0,
+        "units": 222026256,
+        "wall_seconds": 2.095834197,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.0674930004116127,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 198.43156570725242,
+        "units_per_second": 7150001.755409294
+      },
+      "dma_lifetime_other": {
+        "calls": 0,
+        "wall_ns": 0,
+        "cpu_ns": 0,
+        "units": 0,
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.0,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 0.0,
+        "units_per_second": 0.0
+      },
+      "dma_request_delay_stream": {
+        "calls": 4638,
+        "wall_ns": 19136403631,
+        "cpu_ns": 0,
+        "units": 782412188,
+        "wall_seconds": 19.136403631,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.6162573833333963,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 4126.003370202674,
+        "units_per_second": 25196337.669422425
+      },
+      "dma_request_delay_store": {
+        "calls": 10562,
+        "wall_ns": 614142245,
+        "cpu_ns": 0,
+        "units": 222026256,
+        "wall_seconds": 0.614142245,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.01977747230859491,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 58.146396989206586,
+        "units_per_second": 7150001.755409294
+      },
+      "dma_request_delay_other": {
+        "calls": 0,
+        "wall_ns": 0,
+        "cpu_ns": 0,
+        "units": 0,
+        "wall_seconds": 0.0,
+        "cpu_seconds": 0.0,
+        "wall_fraction": 0.0,
+        "one_core_cpu_fraction": 0.0,
+        "mean_wall_us": 0.0,
+        "units_per_second": 0.0
+      }
+    },
+    "diagnostic_only": true,
+    "exclusive_times": false,
+    "caveats": [
+      "Nested and concurrent totals must not be added.",
+      "Scopes are counted on completion; window edges have in-flight scope skew.",
+      "DMA lifetime is submit-to-observed-FINISH; includes producer delay and downstream backpressure.",
+      "Request delay includes START, intervening work and time before FINISH; not DMA idle time.",
+      "CPU timer/logging overhead is included; not corrected.",
+      "Physical DMA saturation requires additional hardware flow-control measurements."
+    ]
+  },
+  "diagnostic_fps": 24.897452208559134
+}

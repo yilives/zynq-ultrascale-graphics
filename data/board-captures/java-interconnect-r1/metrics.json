@@ -1,0 +1,12 @@
+{
+  "resource_saved_lut": 6059,
+  "new_fps": 22.78920897039357,
+  "old_fps": 26.348191750497275,
+  "fps_ratio": 0.8649249704190218,
+  "single_run_each": true,
+  "pure_interconnect_causal_comparison": false,
+  "sources": {
+    "r90": "393093d8629503adfb4fa192753a72933ea107d9078bc5d342d6b87af97bc294",
+    "r92": "dc34ebdd17ded9fda6c959894dd43ea3c50dab1abe7609a641eb958c672564d2"
+  }
+}

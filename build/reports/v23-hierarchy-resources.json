@@ -1,0 +1,253 @@
+{
+  "passed": true,
+  "date": "2026-10-28",
+  "profiles": [
+    {
+      "label": "v23: single TMU + CNN + FSR",
+      "capacity": {
+        "lut": 70560,
+        "ff": 141120,
+        "bram_tiles": 216,
+        "dsp": 360
+      },
+      "total": {
+        "lut": 64901,
+        "ff": 71349,
+        "bram_tiles": 216.0,
+        "dsp": 325
+      },
+      "free": {
+        "lut": 5659,
+        "ff": 69771,
+        "bram_tiles": 0.0,
+        "dsp": 35
+      },
+      "groups": [
+        {
+          "label": "FSR",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/fsr",
+              "line": 369
+            }
+          ],
+          "lut": 20291,
+          "ff": 19446,
+          "bram_tiles": 78.0,
+          "dsp": 173
+        },
+        {
+          "label": "RasterIX + display",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/gpu",
+              "line": 478
+            }
+          ],
+          "lut": 12938,
+          "ff": 10601,
+          "bram_tiles": 54.5,
+          "dsp": 84
+        },
+        {
+          "label": "CNN",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/neural",
+              "line": 575
+            }
+          ],
+          "lut": 4466,
+          "ff": 2075,
+          "bram_tiles": 55.0,
+          "dsp": 65
+        },
+        {
+          "label": "AXI interconnects",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/control",
+              "line": 91
+            },
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/pl_memory",
+              "line": 659
+            },
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/ps_memory",
+              "line": 856
+            }
+          ],
+          "lut": 17570,
+          "ff": 27101,
+          "bram_tiles": 0.0,
+          "dsp": 0
+        },
+        {
+          "label": "PL DDR4 controller",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/pl_ddr4",
+              "line": 579
+            }
+          ],
+          "lut": 7640,
+          "ff": 8960,
+          "bram_tiles": 25.5,
+          "dsp": 3
+        },
+        {
+          "label": "DMA",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/axi_dma_0",
+              "line": 53
+            }
+          ],
+          "lut": 1545,
+          "ff": 2240,
+          "bram_tiles": 3.0,
+          "dsp": 0
+        },
+        {
+          "label": "Other / LUT accounting",
+          "instances": [],
+          "lut": 451,
+          "ff": 926,
+          "bram_tiles": 0.0,
+          "dsp": 0
+        }
+      ],
+      "hierarchy": "report/architecture-audit-2026-10-28/v23-utilization-hier.rpt",
+      "hierarchy_sha256": "0a164aed1770ec0b8f974cd84c2285c1a4d37e1f612030be6123914228aafe2b",
+      "checkpoint": "build/fsr-pl/fixed-v23-bufferedread/board/fsr_routed.dcp",
+      "checkpoint_sha256": "be0b3db6d87cb6ead908aa05485c09b8a8bb68b4bf86486c45aba59d2ae2aeda",
+      "checkpoint_previously_pinned": true,
+      "accepted_input": "report/fsr-pl/fixed-v23-bufferedread/board/acceptance.json",
+      "note": "Child totals are inclusive. LUT combining can differ across hierarchy; residual is accounting, not a standalone hardware module."
+    },
+    {
+      "label": "Java: dual TMU + FSR, no CNN",
+      "capacity": {
+        "lut": 70560,
+        "ff": 141120,
+        "bram_tiles": 216,
+        "dsp": 360
+      },
+      "total": {
+        "lut": 65624,
+        "ff": 74028,
+        "bram_tiles": 149.0,
+        "dsp": 330
+      },
+      "free": {
+        "lut": 4936,
+        "ff": 67092,
+        "bram_tiles": 67.0,
+        "dsp": 30
+      },
+      "groups": [
+        {
+          "label": "FSR",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/fsr",
+              "line": 366
+            }
+          ],
+          "lut": 20317,
+          "ff": 19494,
+          "bram_tiles": 78.0,
+          "dsp": 173
+        },
+        {
+          "label": "RasterIX + display",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/gpu",
+              "line": 475
+            }
+          ],
+          "lut": 18026,
+          "ff": 15772,
+          "bram_tiles": 42.5,
+          "dsp": 154
+        },
+        {
+          "label": "CNN",
+          "instances": [],
+          "lut": 0,
+          "ff": 0,
+          "bram_tiles": 0,
+          "dsp": 0
+        },
+        {
+          "label": "AXI interconnects",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/control",
+              "line": 91
+            },
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/pl_memory",
+              "line": 688
+            },
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/ps_memory",
+              "line": 885
+            }
+          ],
+          "lut": 17613,
+          "ff": 26637,
+          "bram_tiles": 0.0,
+          "dsp": 0
+        },
+        {
+          "label": "PL DDR4 controller",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/pl_ddr4",
+              "line": 608
+            }
+          ],
+          "lut": 7647,
+          "ff": 8959,
+          "bram_tiles": 25.5,
+          "dsp": 3
+        },
+        {
+          "label": "DMA",
+          "instances": [
+            {
+              "path": "axu3eg_rasterix_touch_top/system_i/rasterix_system_i/axi_dma_0",
+              "line": 53
+            }
+          ],
+          "lut": 1555,
+          "ff": 2240,
+          "bram_tiles": 3.0,
+          "dsp": 0
+        },
+        {
+          "label": "Other / LUT accounting",
+          "instances": [],
+          "lut": 466,
+          "ff": 926,
+          "bram_tiles": 0.0,
+          "dsp": 0
+        }
+      ],
+      "hierarchy": "build/minecraft-java-125/dual-tmu/board/utilization_hier.rpt",
+      "hierarchy_sha256": "f0869da9c9fb9c11fe4ea3acdfcfb5c5bcb1b331f931dc913fa85296d1fda8f0",
+      "checkpoint": "build/minecraft-java-125/dual-tmu/board/routed.dcp",
+      "checkpoint_sha256": "2ccde3efdd2d677cc0e21638c6b90c5356c740dc0e713491a9e9f4cd2498aac9",
+      "checkpoint_previously_pinned": false,
+      "accepted_input": "report/minecraft-java-125/swap-fence/local-r78.json",
+      "note": "Child totals are inclusive. LUT combining can differ across hierarchy; residual is accounting, not a standalone hardware module."
+    }
+  ],
+  "hardware_changed": false,
+  "bitstream_regenerated": false,
+  "source": "Routed checkpoints/reports, not HLS estimates. v23 hierarchy exported by read-only open_checkpoint.",
+  "current_last_verified_bit_sha256": "035c30597ce7ed94dff24a733dbbb81fa68998e8d3fba52ef45902d23ccb01d9"
+}

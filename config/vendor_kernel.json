@@ -1,0 +1,7 @@
+{
+  "archive": "G:\\baidudownload\\zynq_soft_2020\\petalinux\\u-boot及内核源码\\linux-xlnx-xilinx-v2020.1.zip",
+  "sha256": "0ae56ec94e17dee45263a0282bd4b2200db9b5865a0bcae0376a4a4c877ce10e",
+  "source_commit": "043f8a226a752a1dd11f7ff64cee6dbe7334d394",
+  "kernel_version": "5.4.0",
+  "purpose": "New local kernel candidate with matching module symbols; physical boot pending"
+}

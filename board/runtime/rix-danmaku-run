@@ -1,0 +1,15 @@
+#!/bin/sh
+# Manual entry point; does not change boot selection or start other games.
+set -eu
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if pidof tuxracer rix-smoke neverball neverputt quake quakespasm quake3e ioquake3 rix-danmaku rix-superres >/dev/null 2>&1; then
+    echo 'GPU client already running; stop it normally before starting danmaku.' >&2
+    exit 1
+fi
+if [ ! -c /dev/dma_proxy_tx ]; then insmod /opt/rasterix/modules/rix_dma_proxy.ko; fi
+if [ ! -c /dev/plgpu_display ]; then insmod /opt/rasterix/modules/plgpu_display.ko; fi
+/opt/rasterix/postproc-touch/bin/rix-superres --pl-mode nearest --style 0
+if [ "$#" -eq 0 ]; then
+    set -- --count 512 --mode alpha --seconds 600 --output "$here/demo-results.json"
+fi
+exec "$here/rix-danmaku" "$@"

@@ -1,0 +1,92 @@
+// RasterIX
+// https://github.com/ToNi3141/RasterIX
+// Copyright (c) 2023 ToNi3141
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#ifndef _TEXTURE_STREAM_CMD_HPP_
+#define _TEXTURE_STREAM_CMD_HPP_
+
+#include "Op.hpp"
+#include "RenderConfigs.hpp"
+#include "renderer/displaylist/DisplayList.hpp"
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <tcb/span.hpp>
+
+namespace rr
+{
+
+class TextureStreamCmd
+{
+    static constexpr uint32_t TEXTURE_STREAM_SIZE_POS { 0 }; // size: 19 bit
+    static constexpr uint32_t TEXTURE_STREAM_SIZE_MASK { 0x7FFFF }; // size: 19 bit
+    static constexpr uint32_t TEXTURE_STREAM_TMU_NR_POS { 19 }; // size: 2 bit
+    static constexpr uint32_t TEXTURE_STREAM_TMU_NR_MASK { 0x3 }; // size: 2 bit
+
+public:
+    using PayloadType = tcb::span<const uint32_t>;
+    using CommandType = uint32_t;
+
+    TextureStreamCmd() = default;
+    TextureStreamCmd(const TextureStreamCmd& rhs)
+    {
+        *this = rhs;
+    }
+
+    TextureStreamCmd(const std::size_t tmu, const tcb::span<const std::size_t>& pages)
+    {
+        for (std::size_t i = 0; i < pages.size(); i++)
+        {
+            m_pages[i] = RenderConfig::GRAM_MEMORY_LOC + RenderConfig::TEXTURE_POOL_OFFSET + static_cast<uint32_t>(pages[i] * RenderConfig::TEXTURE_PAGE_SIZE);
+        }
+        m_payload = { m_pages.data(), pages.size() };
+
+        const uint32_t texSize = static_cast<uint32_t>(pages.size()) << TEXTURE_STREAM_SIZE_POS;
+        const uint32_t tmuShifted = static_cast<uint32_t>(tmu) << TEXTURE_STREAM_TMU_NR_POS;
+        m_op = op::TEXTURE_STREAM | texSize | tmuShifted;
+    }
+
+    TextureStreamCmd(const CommandType op, const PayloadType& payload, const bool)
+    {
+        m_op = op;
+        m_payload = payload;
+    }
+
+    std::size_t getTmu() const { return (m_op >> TEXTURE_STREAM_TMU_NR_POS) & TEXTURE_STREAM_TMU_NR_MASK; }
+
+    const PayloadType& payload() const { return m_payload; }
+    CommandType command() const { return m_op; }
+
+    static std::size_t getNumberOfElementsInPayloadByCommand(const uint32_t cmd) { return cmd & TEXTURE_STREAM_SIZE_MASK; }
+    static bool isThis(const CommandType cmd) { return (cmd & op::MASK) == op::TEXTURE_STREAM; }
+
+    TextureStreamCmd& operator=(const TextureStreamCmd& rhs)
+    {
+        std::copy(rhs.m_payload.begin(), rhs.m_payload.end(), m_pages.begin());
+        m_payload = { m_pages.data(), rhs.m_payload.size() };
+        m_op = rhs.m_op;
+        return *this;
+    }
+
+private:
+    std::array<uint32_t, RenderConfig::getMaxTexturePages()> m_pages;
+    PayloadType m_payload {};
+    CommandType m_op {};
+};
+
+} // namespace rr
+
+#endif // _TEXTURE_STREAM_CMD_HPP_

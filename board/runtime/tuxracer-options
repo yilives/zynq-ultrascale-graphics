@@ -1,0 +1,19 @@
+# Initial single-TMU quality profile. Copy to $HOME/.tuxracer/options on target.
+set data_dir "/usr/local/share/tuxracer"
+# Logical UI canvas; the fixed GPU viewport remains 400x240.
+set x_resolution 800
+set y_resolution 480
+set fullscreen false
+set bpp_mode 16
+set display_fps true
+set terrain_blending false
+set perfect_terrain_blending false
+set terrain_envmap false
+set draw_particles false
+set draw_tux_shadow true
+set use_sphere_display_list false
+set course_detail_level 50
+set forward_clip_distance 60
+set backward_clip_distance 10
+set mipmap_type 1
+set disable_fog false
